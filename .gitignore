@@ -1,7 +1,6 @@
 .idea/
 commonjs/
 coverage/
-dist/
 doc/
 docs/api/
 docs/functions/
