@@ -14,6 +14,7 @@ module.exports.create = function create() {
   config.forEach(function(c) {
     c.devtool = false;
     c.output.filename = c.output.filename.replace(/\.js$/, '.min.js');
+    c.output.pathinfo = true;
 
     c.optimization = {
       minimize: true,
