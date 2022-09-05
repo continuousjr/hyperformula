@@ -1,16 +1,53 @@
-import {HyperFormula} from '../../src'
+import {HyperFormula, RawCellContent} from '../../src'
 import {adr} from '../testUtils'
+import ExcelJS from 'exceljs'
+
+async function addToFile(testName: string, data: Record<string, RawCellContent[][]>) {
+  const fileName = 'test.xlsx'
+
+  const workbook = new ExcelJS.Workbook()
+
+  try {
+    await workbook.xlsx.readFile(fileName)
+  } catch(e){
+    console.log('file will be created')
+  } 
+ 
+  Object.values(data).forEach((cells) => {
+    const num = workbook.worksheets.length + 1
+    const sheetName = `${num} ${testName}`
+    const sheet = workbook.addWorksheet(sheetName.substring(0, 31))
+
+    cells.forEach((row, rowIdx) => {
+      const xrow = sheet.getRow(rowIdx + 1)
+      row.forEach((cell, colIdx) => {
+        const xcell = xrow.getCell(colIdx + 1)
+        if (typeof cell === 'string' && cell.indexOf('/') === 2) {
+          const [d, m, y] = cell.split('/')
+          xcell.value = [m, d, y].join('/') // convert GB date to US
+        } else if (typeof cell === 'string' && cell.startsWith('=')) {
+          xcell.value = {formula: cell, date1904: true}
+        } else {
+          xcell.value = cell
+        }        
+      })
+    })
+  })
+  await workbook.xlsx.writeFile(fileName)
+}
 
 describe('Date arithmetic', () => {
-  it('subtract two dates', () => {
+  it('subtract two dates', async() => {
     const engine = HyperFormula.buildFromArray([
       ['02/02/2020', '06/02/2019', '=A1-B1'],
     ])
 
     expect(engine.getCellValue(adr('C1'))).toBe(361)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare two dates', () => {
+  it('compare two dates', async() => {
     const engine = HyperFormula.buildFromArray([
       ['02/02/2020', '02/06/2019', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1'],
     ])
@@ -19,9 +56,11 @@ describe('Date arithmetic', () => {
     expect(engine.getCellValue(adr('D1'))).toBe(false)
     expect(engine.getCellValue(adr('E1'))).toBe(true)
     expect(engine.getCellValue(adr('F1'))).toBe(false)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare two datestrings', () => {
+  it('compare two datestrings', async() => {
     const engine = HyperFormula.buildFromArray([
       ['="02/02/2020"', '="02/06/2019"', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1'],
     ])
@@ -30,9 +69,11 @@ describe('Date arithmetic', () => {
     expect(engine.getCellValue(adr('D1'))).toBe(false)
     expect(engine.getCellValue(adr('E1'))).toBe(true)
     expect(engine.getCellValue(adr('F1'))).toBe(false)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare date with datestring, different dates', () => {
+  it('compare date with datestring, different dates', async() => {
     const engine = HyperFormula.buildFromArray([
       ['="02/02/2020"', '02/06/2019', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1', '=A1=B1', '=A1<>B1'],
     ])
@@ -43,9 +84,11 @@ describe('Date arithmetic', () => {
     expect(engine.getCellValue(adr('F1'))).toBe(false)
     expect(engine.getCellValue(adr('G1'))).toBe(false)
     expect(engine.getCellValue(adr('H1'))).toBe(true)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare date with datestring, the same dates', () => {
+  it('compare date with datestring, the same dates', async() => {
     const engine = HyperFormula.buildFromArray([
       ['="02/02/2020"', '02/02/2020', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1', '=A1=B1', '=A1<>B1'],
     ])
@@ -56,9 +99,11 @@ describe('Date arithmetic', () => {
     expect(engine.getCellValue(adr('F1'))).toBe(true)
     expect(engine.getCellValue(adr('G1'))).toBe(true)
     expect(engine.getCellValue(adr('H1'))).toBe(false)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare date with bool', () => {
+  it('compare date with bool', async() => {
     const engine = HyperFormula.buildFromArray([
       ['="02/02/2020"', '=TRUE()', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1'],
     ])
@@ -67,9 +112,11 @@ describe('Date arithmetic', () => {
     expect(engine.getCellValue(adr('D1'))).toBe(true)
     expect(engine.getCellValue(adr('E1'))).toBe(false)
     expect(engine.getCellValue(adr('F1'))).toBe(true)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare date with number', () => {
+  it('compare date with number', async() => {
     const engine = HyperFormula.buildFromArray([
       ['02/02/2020', '2', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1'],
     ])
@@ -78,25 +125,31 @@ describe('Date arithmetic', () => {
     expect(engine.getCellValue(adr('D1'))).toBe(false)
     expect(engine.getCellValue(adr('E1'))).toBe(true)
     expect(engine.getCellValue(adr('F1'))).toBe(false)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('sum date with number', () => {
+  it('sum date with number', async() => {
     const engine = HyperFormula.buildFromArray([
       ['02/02/2020', '2', '=A1+B1'],
     ])
 
     expect(engine.getCellValue(adr('C1'))).toBe(43865)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('sum date with boolean', () => {
+  it('sum date with boolean', async() => {
     const engine = HyperFormula.buildFromArray([
       ['02/02/2020', '=TRUE()', '=A1+B1'],
     ])
 
     expect(engine.getCellValue(adr('C1'))).toBe(43864)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('functions on dates', () => {
+  it('functions on dates', async() => {
     const engine = HyperFormula.buildFromArray([
       ['=ISEVEN("02/02/2020")', '=COS("02/02/2020")', '=BITOR("02/02/2020","16/08/1985")'],
     ], {smartRounding: false})
@@ -104,19 +157,23 @@ describe('Date arithmetic', () => {
     expect(engine.getCellValue(adr('A1'))).toBe(false)
     expect(engine.getCellValue(adr('B1'))).toBe(0.9965266857693633)
     expect(engine.getCellValue(adr('C1'))).toBe(64383)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 })
 
 describe('Time arithmetic', () => {
-  it('subtract two time values', () => {
+  it('subtract two time values', async() => {
     const engine = HyperFormula.buildFromArray([
       ['13:13', '11:50', '=TEXT(A1-B1, "hh:mm")'],
     ])
 
     expect(engine.getCellValue(adr('C1'))).toBe('01:23')
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('subtract two time values - rounding test', () => {
+  it('subtract two time values - rounding test', async() => {
     const engine = HyperFormula.buildFromArray([
       ['15:00', '14:00', '=TEXT(A1-B1, "hh:mm")'],
       ['15:01', '14:00', '=TEXT(A2-B2, "hh:mm")'],
@@ -184,9 +241,11 @@ describe('Time arithmetic', () => {
     expect(engine.getCellValue(adr('C30'))).toBe('01:29')
     expect(engine.getCellValue(adr('C31'))).toBe('01:30')
     expect(engine.getCellValue(adr('C32'))).toBe('01:31')
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare two time values', () => {
+  it('compare two time values', async() => {
     const engine = HyperFormula.buildFromArray([
       ['13:13', '11:50', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1'],
     ])
@@ -195,9 +254,11 @@ describe('Time arithmetic', () => {
     expect(engine.getCellValue(adr('D1'))).toBe(false)
     expect(engine.getCellValue(adr('E1'))).toBe(true)
     expect(engine.getCellValue(adr('F1'))).toBe(false)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare two time-strings', () => {
+  it('compare two time-strings', async() => {
     const engine = HyperFormula.buildFromArray([
       ['="13:13"', '="11:50"', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1'],
     ])
@@ -206,9 +267,11 @@ describe('Time arithmetic', () => {
     expect(engine.getCellValue(adr('D1'))).toBe(false)
     expect(engine.getCellValue(adr('E1'))).toBe(true)
     expect(engine.getCellValue(adr('F1'))).toBe(false)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare a time value with a time-string, non-equal', () => {
+  it('compare a time value with a time-string, non-equal', async() => {
     const engine = HyperFormula.buildFromArray([
       ['="13:13"', '11:50', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1', '=A1=B1', '=A1<>B1'],
     ])
@@ -219,9 +282,11 @@ describe('Time arithmetic', () => {
     expect(engine.getCellValue(adr('F1'))).toBe(false)
     expect(engine.getCellValue(adr('G1'))).toBe(false)
     expect(engine.getCellValue(adr('H1'))).toBe(true)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare a time value with a time-string, equal', () => {
+  it('compare a time value with a time-string, equal', async() => {
     const engine = HyperFormula.buildFromArray([
       ['="13:13"', '13:13', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1', '=A1=B1', '=A1<>B1'],
     ])
@@ -232,9 +297,11 @@ describe('Time arithmetic', () => {
     expect(engine.getCellValue(adr('F1'))).toBe(true)
     expect(engine.getCellValue(adr('G1'))).toBe(true)
     expect(engine.getCellValue(adr('H1'))).toBe(false)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare a time-string with a boolean value', () => {
+  it('compare a time-string with a boolean value', async() => {
     const engine = HyperFormula.buildFromArray([
       ['="13:13"', '=TRUE()', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1'],
     ])
@@ -243,9 +310,11 @@ describe('Time arithmetic', () => {
     expect(engine.getCellValue(adr('D1'))).toBe(true)
     expect(engine.getCellValue(adr('E1'))).toBe(false)
     expect(engine.getCellValue(adr('F1'))).toBe(true)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('compare a time value with a number', () => {
+  it('compare a time value with a number', async() => {
     const engine = HyperFormula.buildFromArray([
       ['13:13', '0.01', '=A1>B1', '=A1<B1', '=A1>=B1', '=A1<=B1'],
     ])
@@ -254,32 +323,40 @@ describe('Time arithmetic', () => {
     expect(engine.getCellValue(adr('D1'))).toBe(false)
     expect(engine.getCellValue(adr('E1'))).toBe(true)
     expect(engine.getCellValue(adr('F1'))).toBe(false)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('sum a time value with a number', () => {
+  it('sum a time value with a number', async() => {
     const engine = HyperFormula.buildFromArray([
       ['13:13', '2', '=A1+B1', '=TEXT(A1+B1, "hh:mm")'],
     ])
 
     expect(engine.getCellValue(adr('C1'))).toBeGreaterThan(2)
     expect(engine.getCellValue(adr('D1'))).toBe('13:13')
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('sum a time value with boolean', () => {
+  it('sum a time value with boolean', async() => {
     const engine = HyperFormula.buildFromArray([
       ['13:13', '=TRUE()', '=A1+B1', '=TEXT(A1+B1, "hh:mm")'],
     ])
 
     expect(engine.getCellValue(adr('C1'))).toBeGreaterThan(1)
     expect(engine.getCellValue(adr('D1'))).toBe('13:13')
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 
-  it('apply a numeric function to a time value', () => {
+  it('apply a numeric function to a time value', async() => {
     const engine = HyperFormula.buildFromArray([
       ['=ISODD("13:13")', '=COS("13:13")'],
     ], {smartRounding: false})
 
     expect(engine.getCellValue(adr('A1'))).toBe(false)
     expect(engine.getCellValue(adr('B1'))).toBe(0.8521613392800845)
+
+    await addToFile(expect.getState().currentTestName, engine.getAllSheetsSerialized())
   })
 })
