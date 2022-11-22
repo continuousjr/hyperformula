@@ -155,6 +155,7 @@
     "webpackbar": "^4.0.0"
   },
   "dependencies": {
+    "avsc": "^5.7.6",
     "chevrotain": "^6.5.0",
     "tiny-emitter": "^2.1.0",
     "unorm": "^1.6.0"

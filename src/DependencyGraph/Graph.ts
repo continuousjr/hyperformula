@@ -3,6 +3,8 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
+import { SerializedGraphState } from '../avro/SerializedGraphType'
+
 export type DependencyQuery<T> = (vertex: T) => T[]
 
 export interface TopSortResult<T> {
@@ -28,17 +30,24 @@ export class Graph<T> {
   /** Set with nodes in graph. */
   public nodes: Set<T> = new Set()
 
-  public specialNodes: Set<T> = new Set()
-  public specialNodesStructuralChanges: Set<T> = new Set()
-  public specialNodesRecentlyChanged: Set<T> = new Set()
-  public infiniteRanges: Set<T> = new Set()
+  public specialNodes: Set<T>
+  public specialNodesStructuralChanges: Set<T>
+  public specialNodesRecentlyChanged: Set<T>
+  public infiniteRanges: Set<T>
 
   /** Nodes adjacency mapping. */
-  private edges: Map<T, Set<T>> = new Map()
+  public readonly edges: Map<T, Set<T>>
 
   constructor(
-    private readonly dependencyQuery: DependencyQuery<T>
+    private readonly dependencyQuery: DependencyQuery<T>,
+    serializedGraphState?: SerializedGraphState<T>
   ) {
+    this.nodes = serializedGraphState?.nodes || new Set()
+    this.specialNodes = serializedGraphState?.specialNodes || new Set()
+    this.specialNodesStructuralChanges = serializedGraphState?.specialNodesStructuralChanges || new Set()
+    this.specialNodesRecentlyChanged = serializedGraphState?.specialNodesRecentlyChanged || new Set()
+    this.infiniteRanges = serializedGraphState?.infiniteRanges || new Set()
+    this.edges = serializedGraphState?.edges || new Map()
   }
 
   /**

@@ -3,24 +3,27 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {AbsoluteCellRange} from '../AbsoluteCellRange'
-import {ArraySize} from '../ArraySize'
-import {ArrayValue, ErroredArray, IArray, NotComputedArray} from '../ArrayValue'
-import {CellError, equalSimpleCellAddress, ErrorType, SimpleCellAddress} from '../Cell'
-import {RawCellContent} from '../CellContentParser'
-import {ErrorMessage} from '../error-message'
-import {EmptyValue, getRawValue, InternalScalarValue, InterpreterValue} from '../interpreter/InterpreterValue'
-import {LazilyTransformingAstService} from '../LazilyTransformingAstService'
-import {Maybe} from '../Maybe'
-import {Ast} from '../parser'
-import {ColumnsSpan, RowsSpan} from '../Span'
+import { AbsoluteCellRange } from '../AbsoluteCellRange'
+import { ArraySize } from '../ArraySize'
+import { ArrayValue, ErroredArray, IArray, NotComputedArray } from '../ArrayValue'
+import { CellError, equalSimpleCellAddress, ErrorType, SimpleCellAddress } from '../Cell'
+import { RawCellContent } from '../CellContentParser'
+import { ErrorMessage } from '../error-message'
+import { EmptyValue, getRawValue, InternalScalarValue, InterpreterValue } from '../interpreter/InterpreterValue'
+import { LazilyTransformingAstService } from '../LazilyTransformingAstService'
+import { Maybe } from '../Maybe'
+import { Ast } from '../parser'
+import { ColumnsSpan, RowsSpan } from '../Span'
+import { BaseVertex } from './BaseVertex'
 
-export abstract class FormulaVertex {
+export abstract class FormulaVertex extends BaseVertex {
   protected constructor(
     protected formula: Ast,
     protected cellAddress: SimpleCellAddress,
-    public version: number
+    public version: number,
+    type: string
   ) {
+    super(type)
   }
 
   public get width(): number {
@@ -80,10 +83,12 @@ export abstract class FormulaVertex {
 }
 
 export class ArrayVertex extends FormulaVertex {
+  private static TYPE = 'ARRAY_VERTEX'
+
   array: IArray
 
   constructor(formula: Ast, cellAddress: SimpleCellAddress, size: ArraySize, version: number = 0) {
-    super(formula, cellAddress, version)
+    super(formula, cellAddress, version, ArrayVertex.TYPE)
     if (size.isRef) {
       this.array = new ErroredArray(new CellError(ErrorType.REF, ErrorMessage.NoSpaceForArrayResult), ArraySize.error())
     } else {
@@ -224,6 +229,8 @@ export class ArrayVertex extends FormulaVertex {
  * Represents vertex which keeps formula
  */
 export class FormulaCellVertex extends FormulaVertex {
+  public static TYPE = 'FORMULA_CELL_VERTEX'
+
   /** Most recently computed value of this formula. */
   private cachedCellValue?: InterpreterValue
 
@@ -234,7 +241,7 @@ export class FormulaCellVertex extends FormulaVertex {
     address: SimpleCellAddress,
     version: number,
   ) {
-    super(formula, address, version)
+    super(formula, address, version, FormulaCellVertex.TYPE)
   }
 
   public valueOrUndef(): Maybe<InterpreterValue> {

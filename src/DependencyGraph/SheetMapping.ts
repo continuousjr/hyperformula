@@ -3,15 +3,15 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {NoSheetWithIdError, NoSheetWithNameError, SheetNameAlreadyTakenError} from '../errors'
-import {TranslationPackage, UIElement} from '../i18n'
-import {Maybe} from '../Maybe'
+import { NoSheetWithIdError, NoSheetWithNameError, SheetNameAlreadyTakenError } from '../errors'
+import { TranslationPackage, UIElement } from '../i18n'
+import { Maybe } from '../Maybe'
 
 function canonicalize(sheetDisplayName: string): string {
   return sheetDisplayName.toLowerCase()
 }
 
-class Sheet {
+export class Sheet {
   constructor(
     public readonly id: number,
     public displayName: string,
@@ -114,7 +114,26 @@ export class SheetMapping {
   }
 
   public sheetNames(): string[] {
-    return Array.from(this.mappingFromId.values()).map((s) => s.displayName)
+    return this.sheets().map((s) => s.displayName)
+  }
+
+  public sheets(): Sheet[] {
+    return Array.from(this.mappingFromId.values())
+  }
+
+  public translationPackage(): TranslationPackage {
+    return this.languages
+  }
+
+  public setSheets(sheets: Sheet[]): void {
+    this.mappingFromId.clear()
+    this.mappingFromCanonicalName.clear()
+
+    this.lastSheetId = -1
+    sheets.forEach(sheet => {
+      this.store(sheet)
+      this.lastSheetId = Math.max(this.lastSheetId, sheet.id)
+    })
   }
 
   private store(sheet: Sheet): void {

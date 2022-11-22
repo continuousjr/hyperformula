@@ -1,11 +1,11 @@
-import {HyperFormula, LanguageAlreadyRegisteredError, LanguageNotRegisteredError} from '../src'
-import {ProtectedFunctionTranslationError} from '../src/errors'
-import {RawTranslationPackage, TranslationPackage} from '../src/i18n'
+import { HyperFormula, LanguageAlreadyRegisteredError, LanguageNotRegisteredError } from '../src'
+import { ProtectedFunctionTranslationError } from '../src/errors'
+import { RawTranslationPackage, TranslationPackage } from '../src/i18n'
 import * as languages from '../src/i18n/languages'
-import {enGB, plPL} from '../src/i18n/languages'
-import {FunctionRegistry} from '../src/interpreter/FunctionRegistry'
-import {CellAddress} from '../src/parser'
-import {adr, extractReference} from './testUtils'
+import { enGB, plPL } from '../src/i18n/languages'
+import { FunctionRegistry } from '../src/interpreter/FunctionRegistry'
+import { CellAddress } from '../src/parser'
+import { adr, extractReference } from './testUtils'
 
 describe('i18n', () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -101,12 +101,12 @@ describe('i18n', () => {
   it('translation package sanitization', () => {
     // eslint-disable-next-line
     // @ts-ignore
-    expect(() => new TranslationPackage({}, {}, {})).toThrowError()
+    expect(() => new TranslationPackage({}, {}, {}, '')).toThrowError()
   })
 
   it('should not be possible to construct TranslationPackage with protected translation', () => {
     expect(() =>
-      new TranslationPackage({'VERSION': 'FOO'}, plPL.errors, plPL.ui)
+      new TranslationPackage({'VERSION': 'FOO'}, plPL.errors, plPL.ui, '')
     ).toThrow(new ProtectedFunctionTranslationError('VERSION'))
   })
 

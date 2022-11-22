@@ -3,23 +3,23 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {SimpleCellAddress} from '../../Cell'
-import {RawCellContent} from '../../CellContentParser'
-import {NoSheetWithIdError} from '../../errors'
-import {EmptyValue, InterpreterValue} from '../../interpreter/InterpreterValue'
-import {Maybe} from '../../Maybe'
-import {Sheet, SheetBoundaries} from '../../Sheet'
-import {ColumnsSpan, RowsSpan} from '../../Span'
-import {ArrayVertex, ValueCellVertex} from '../index'
-import {CellVertex} from '../Vertex'
-import {ChooseAddressMapping} from './ChooseAddressMappingPolicy'
-import {IAddressMappingStrategy} from './IAddressMappingStrategy'
+import { SimpleCellAddress } from '../../Cell'
+import { RawCellContent } from '../../CellContentParser'
+import { NoSheetWithIdError } from '../../errors'
+import { EmptyValue, InterpreterValue } from '../../interpreter/InterpreterValue'
+import { Maybe } from '../../Maybe'
+import { Sheet, SheetBoundaries } from '../../Sheet'
+import { ColumnsSpan, RowsSpan } from '../../Span'
+import { ArrayVertex, ValueCellVertex } from '../index'
+import { CellVertex } from '../Vertex'
+import { ChooseAddressMapping } from './ChooseAddressMappingPolicy'
+import { IAddressMappingStrategy } from './IAddressMappingStrategy'
 
 export class AddressMapping {
   private mapping: Map<number, IAddressMappingStrategy> = new Map()
 
   constructor(
-    private readonly policy: ChooseAddressMapping
+    public readonly policy: ChooseAddressMapping
   ) {
   }
 
@@ -135,6 +135,10 @@ export class AddressMapping {
     return sheetMapping.has(address)
   }
 
+  public hasSheet(sheetId: number): boolean {
+    return this.mapping.has(sheetId)
+  }
+
   /** @inheritDoc */
   public getHeight(sheetId: number): number {
     const sheetMapping = this.mapping.get(sheetId)
@@ -187,6 +191,10 @@ export class AddressMapping {
       throw new NoSheetWithIdError(removedColumns.sheet)
     }
     sheetMapping.removeColumns(removedColumns)
+  }
+
+  public getSheetIds() {
+    return this.mapping.keys()
   }
 
   public* verticesFromRowsSpan(rowsSpan: RowsSpan): IterableIterator<CellVertex> {

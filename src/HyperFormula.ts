@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {AbsoluteCellRange, isSimpleCellRange, SimpleCellRange} from './AbsoluteCellRange'
-import {validateArgToType} from './ArgumentSanitization'
-import {BuildEngineFactory, EngineState} from './BuildEngineFactory'
+import { AbsoluteCellRange, isSimpleCellRange, SimpleCellRange } from './AbsoluteCellRange'
+import { validateArgToType } from './ArgumentSanitization'
+import { BuildEngineFactory, EngineState } from './BuildEngineFactory'
 import {
   CellType,
   CellValueDetailedType,
@@ -17,11 +17,11 @@ import {
   isSimpleCellAddress,
   SimpleCellAddress
 } from './Cell'
-import {CellContent, CellContentParser, RawCellContent} from './CellContentParser'
-import {CellValue} from './CellValue'
-import {Config, ConfigParams, getDefaultConfig} from './Config'
-import {ColumnRowIndex, CrudOperations} from './CrudOperations'
-import {DateTime, numberToSimpleTime} from './DateTimeHelper'
+import { CellContent, CellContentParser, RawCellContent } from './CellContentParser'
+import { CellValue } from './CellValue'
+import { Config, ConfigParams, getDefaultConfig } from './Config'
+import { ColumnRowIndex, CrudOperations } from './CrudOperations'
+import { DateTime, numberToSimpleTime } from './DateTimeHelper'
 import {
   AddressMapping,
   ArrayMapping,
@@ -31,8 +31,8 @@ import {
   SheetMapping,
   Vertex,
 } from './DependencyGraph'
-import {objectDestroy} from './Destroy'
-import {Emitter, Events, Listeners, TypedEmitter} from './Emitter'
+import { objectDestroy } from './Destroy'
+import { Emitter, Events, Listeners, TypedEmitter } from './Emitter'
 import {
   EvaluationSuspendedError,
   ExpectedValueOfTypeError,
@@ -40,17 +40,17 @@ import {
   LanguageNotRegisteredError,
   NotAFormulaError,
 } from './errors'
-import {Evaluator} from './Evaluator'
-import {ExportedChange, Exporter} from './Exporter'
-import {LicenseKeyValidityState} from './helpers/licenseKeyValidator'
-import {buildTranslationPackage, RawTranslationPackage, TranslationPackage} from './i18n'
-import {FunctionPluginDefinition} from './interpreter'
-import {FunctionRegistry, FunctionTranslationsPackage} from './interpreter/FunctionRegistry'
-import {FormatInfo} from './interpreter/InterpreterValue'
-import {LazilyTransformingAstService} from './LazilyTransformingAstService'
-import {ColumnSearchStrategy} from './Lookup/SearchStrategy'
-import {NamedExpression, NamedExpressionOptions, NamedExpressions} from './NamedExpressions'
-import {normalizeAddedIndexes, normalizeRemovedIndexes} from './Operations'
+import { Evaluator } from './Evaluator'
+import { ExportedChange, Exporter } from './Exporter'
+import { LicenseKeyValidityState } from './helpers/licenseKeyValidator'
+import { buildTranslationPackage, RawTranslationPackage, TranslationPackage } from './i18n'
+import { FunctionPluginDefinition } from './interpreter'
+import { FunctionRegistry, FunctionTranslationsPackage } from './interpreter/FunctionRegistry'
+import { FormatInfo } from './interpreter/InterpreterValue'
+import { LazilyTransformingAstService } from './LazilyTransformingAstService'
+import { ColumnSearchStrategy } from './Lookup/SearchStrategy'
+import { NamedExpression, NamedExpressionOptions, NamedExpressions } from './NamedExpressions'
+import { normalizeAddedIndexes, normalizeRemovedIndexes } from './Operations'
 import {
   Ast,
   AstNodeType,
@@ -62,9 +62,11 @@ import {
   simpleCellRangeToString,
   Unparser,
 } from './parser'
-import {Serialization, SerializedNamedExpression} from './Serialization'
-import {Sheet, SheetDimensions, Sheets} from './Sheet'
-import {Statistics, StatType} from './statistics'
+import { Serialization, SerializedNamedExpression } from './Serialization'
+import { Sheet, SheetDimensions, Sheets } from './Sheet'
+import { Statistics, StatType } from './statistics'
+import { AvroSerializer } from './avro/AvroSerializer'
+import { SerializedEngineState } from './avro/SerializedEngineState'
 
 /**
  * This is a class for creating HyperFormula instance, all the following public methods
@@ -319,6 +321,10 @@ export class HyperFormula implements TypedEmitter {
    */
   public static buildEmpty(configInput: Partial<ConfigParams> = {}, namedExpressions: SerializedNamedExpression[] = []): HyperFormula {
     return this.buildFromEngineState(BuildEngineFactory.buildEmpty(configInput, namedExpressions))
+  }
+
+  public static buildFromSerializedEngineState(serializedState: SerializedEngineState, stats: Statistics): HyperFormula {
+    return this.buildFromEngineState(BuildEngineFactory.buildFromSerializedEngineState(serializedState, stats))
   }
 
   /**
@@ -4341,5 +4347,26 @@ export class HyperFormula implements TypedEmitter {
     } else {
       return []
     }
+  }
+
+  static serializeEngine(engine: HyperFormula): Buffer {
+    engine._stats.start(StatType.SERIALIZE_ENGINE)
+
+    const serializer = new AvroSerializer()
+    const result = serializer.serialize(engine)
+
+    engine._stats.end(StatType.SERIALIZE_ENGINE)
+    return result
+  }
+
+  static restoreEngine(buffer: Buffer): HyperFormula {
+    const stats = new Statistics()
+    stats.start(StatType.DESERIALIZE_ENGINE)
+
+    const serializer = new AvroSerializer()
+    const engine = serializer.restore(buffer, stats)
+
+    stats.end(StatType.DESERIALIZE_ENGINE)
+    return engine
   }
 }

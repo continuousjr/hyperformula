@@ -3,9 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {AbsoluteCellRange} from '../AbsoluteCellRange'
-import {SimpleCellAddress} from '../Cell'
-import {CriterionLambda} from '../interpreter/Criterion'
+import { AbsoluteCellRange } from '../AbsoluteCellRange'
+import { SimpleCellAddress } from '../Cell'
+import { CriterionLambda } from '../interpreter/Criterion'
+import { BaseVertex } from './BaseVertex'
 
 /**
  * Represents cache structure for one criterion
@@ -15,7 +16,9 @@ export type CriterionCache = Map<string, [any, CriterionLambda[]]>
 /**
  * Represents vertex bound to range
  */
-export class RangeVertex {
+export class RangeVertex extends BaseVertex {
+  private static TYPE = 'RANGE_VERTEX'
+
   public bruteForce: boolean
   /** Cache for associative aggregate functions. */
   private functionCache: Map<string, any>
@@ -24,6 +27,8 @@ export class RangeVertex {
   private dependentCacheRanges: Set<RangeVertex>
 
   constructor(public range: AbsoluteCellRange) {
+    super(RangeVertex.TYPE)
+    
     this.functionCache = new Map()
     this.criterionFunctionCache = new Map()
     this.dependentCacheRanges = new Set()

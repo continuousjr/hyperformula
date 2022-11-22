@@ -3,9 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {CellError} from '../Cell'
-import {RawCellContent} from '../CellContentParser'
-import {ExtendedNumber} from '../interpreter/InterpreterValue'
+import { CellError } from '../Cell'
+import { RawCellContent } from '../CellContentParser'
+import { ExtendedNumber } from '../interpreter/InterpreterValue'
+import { BaseVertex } from './BaseVertex'
 
 export type ValueCellVertexValue = ExtendedNumber | boolean | string | CellError
 
@@ -17,9 +18,12 @@ export interface RawAndParsedValue {
 /**
  * Represents vertex which keeps static cell value
  */
-export class ValueCellVertex {
+export class ValueCellVertex extends BaseVertex {
+  public static readonly TYPE = 'VALUE_CELL_VERTEX'
+
   /** Static cell value. */
   constructor(private parsedValue: ValueCellVertexValue, private rawValue: RawCellContent) {
+    super(ValueCellVertex.TYPE)
   }
 
   public getValues(): RawAndParsedValue {

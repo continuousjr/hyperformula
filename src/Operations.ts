@@ -3,15 +3,15 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {AbsoluteCellRange} from './AbsoluteCellRange'
-import {absolutizeDependencies, filterDependenciesOutOfScope} from './absolutizeDependencies'
-import {ArraySize, ArraySizePredictor} from './ArraySize'
-import {equalSimpleCellAddress, invalidSimpleCellAddress, simpleCellAddress, SimpleCellAddress} from './Cell'
-import {CellContent, CellContentParser, RawCellContent} from './CellContentParser'
-import {ClipboardCell, ClipboardCellType} from './ClipboardOperations'
-import {Config} from './Config'
-import {ContentChanges} from './ContentChanges'
-import {ColumnRowIndex} from './CrudOperations'
+import { AbsoluteCellRange } from './AbsoluteCellRange'
+import { absolutizeDependencies, filterDependenciesOutOfScope } from './absolutizeDependencies'
+import { ArraySize, ArraySizePredictor } from './ArraySize'
+import { equalSimpleCellAddress, invalidSimpleCellAddress, simpleCellAddress, SimpleCellAddress } from './Cell'
+import { CellContent, CellContentParser, RawCellContent } from './CellContentParser'
+import { ClipboardCell, ClipboardCellType } from './ClipboardOperations'
+import { Config } from './Config'
+import { ContentChanges } from './ContentChanges'
+import { ColumnRowIndex } from './CrudOperations'
 import {
   AddressMapping,
   ArrayVertex,
@@ -24,15 +24,15 @@ import {
   SparseStrategy,
   ValueCellVertex
 } from './DependencyGraph'
-import {FormulaVertex} from './DependencyGraph/FormulaCellVertex'
-import {RawAndParsedValue} from './DependencyGraph/ValueCellVertex'
-import {AddColumnsTransformer} from './dependencyTransformers/AddColumnsTransformer'
-import {AddRowsTransformer} from './dependencyTransformers/AddRowsTransformer'
-import {CleanOutOfScopeDependenciesTransformer} from './dependencyTransformers/CleanOutOfScopeDependenciesTransformer'
-import {MoveCellsTransformer} from './dependencyTransformers/MoveCellsTransformer'
-import {RemoveColumnsTransformer} from './dependencyTransformers/RemoveColumnsTransformer'
-import {RemoveRowsTransformer} from './dependencyTransformers/RemoveRowsTransformer'
-import {RemoveSheetTransformer} from './dependencyTransformers/RemoveSheetTransformer'
+import { FormulaVertex } from './DependencyGraph/FormulaCellVertex'
+import { RawAndParsedValue } from './DependencyGraph/ValueCellVertex'
+import { AddColumnsTransformer } from './dependencyTransformers/AddColumnsTransformer'
+import { AddRowsTransformer } from './dependencyTransformers/AddRowsTransformer'
+import { CleanOutOfScopeDependenciesTransformer } from './dependencyTransformers/CleanOutOfScopeDependenciesTransformer'
+import { MoveCellsTransformer } from './dependencyTransformers/MoveCellsTransformer'
+import { RemoveColumnsTransformer } from './dependencyTransformers/RemoveColumnsTransformer'
+import { RemoveRowsTransformer } from './dependencyTransformers/RemoveRowsTransformer'
+import { RemoveSheetTransformer } from './dependencyTransformers/RemoveSheetTransformer'
 import {
   InvalidArgumentsError,
   NamedExpressionDoesNotExistError,
@@ -41,21 +41,21 @@ import {
   SourceLocationHasArrayError,
   TargetLocationHasArrayError
 } from './errors'
-import {EmptyValue, getRawValue} from './interpreter/InterpreterValue'
-import {LazilyTransformingAstService} from './LazilyTransformingAstService'
-import {ColumnSearchStrategy} from './Lookup/SearchStrategy'
+import { EmptyValue, getRawValue } from './interpreter/InterpreterValue'
+import { LazilyTransformingAstService } from './LazilyTransformingAstService'
+import { ColumnSearchStrategy } from './Lookup/SearchStrategy'
 import {
   doesContainRelativeReferences,
   InternalNamedExpression,
   NamedExpressionOptions,
   NamedExpressions
 } from './NamedExpressions'
-import {NamedExpressionDependency, ParserWithCaching, RelativeDependency} from './parser'
-import {ParsingError} from './parser/Ast'
-import {ParsingResult} from './parser/ParserWithCaching'
-import {findBoundaries, Sheet} from './Sheet'
-import {ColumnsSpan, RowsSpan} from './Span'
-import {Statistics, StatType} from './statistics'
+import { NamedExpressionDependency, ParserWithCaching, RelativeDependency } from './parser'
+import { ParsingError } from './parser/Ast'
+import { ParsingResult } from './parser/ParserWithCaching'
+import { findBoundaries, Sheet } from './Sheet'
+import { ColumnsSpan, RowsSpan } from './Span'
+import { Statistics, StatType } from './statistics'
 
 export class RemoveRowsCommand {
   constructor(
@@ -892,7 +892,9 @@ export class Operations {
   }
 
   private allocateNamedExpressionAddressSpace() {
-    this.dependencyGraph.addressMapping.addSheet(NamedExpressions.SHEET_FOR_WORKBOOK_EXPRESSIONS, new SparseStrategy(0, 0))
+    if (!this.dependencyGraph.addressMapping.hasSheet(NamedExpressions.SHEET_FOR_WORKBOOK_EXPRESSIONS)) {
+      this.dependencyGraph.addressMapping.addSheet(NamedExpressions.SHEET_FOR_WORKBOOK_EXPRESSIONS, new SparseStrategy(0, 0))
+    }
   }
 
   private copyOrFetchGlobalNamedExpressionVertex(expressionName: string, sourceVertex: CellVertex, addedNamedExpressions: string[]): CellVertex {

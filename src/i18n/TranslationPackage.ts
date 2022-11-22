@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {ErrorType, TranslatableErrorType} from '../Cell'
-import {MissingTranslationError, ProtectedFunctionTranslationError} from '../errors'
-import {Maybe} from '../Maybe'
-import {ErrorTranslationSet, TranslationSet, UIElement, UITranslationSet} from './index'
+import { ErrorType, TranslatableErrorType } from '../Cell'
+import { MissingTranslationError, ProtectedFunctionTranslationError } from '../errors'
+import { Maybe } from '../Maybe'
+import { ErrorTranslationSet, TranslationSet, UIElement, UITranslationSet } from './index'
 
 export interface RawTranslationPackage {
   functions: TranslationSet,
@@ -24,6 +24,7 @@ export class TranslationPackage {
     private functions: TranslationSet,
     private errors: ErrorTranslationSet,
     private ui: UITranslationSet,
+    public readonly langCode: string
   ) {
     this.checkUI()
     this.checkErrors()
@@ -128,6 +129,7 @@ export function buildTranslationPackage(rawTranslationPackage: RawTranslationPac
   return new TranslationPackage(
     Object.assign({}, rawTranslationPackage.functions),
     Object.assign({}, rawTranslationPackage.errors),
-    Object.assign({}, rawTranslationPackage.ui)
+    Object.assign({}, rawTranslationPackage.ui),
+    rawTranslationPackage.langCode
   )
 }
