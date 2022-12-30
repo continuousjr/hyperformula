@@ -4350,23 +4350,23 @@ export class HyperFormula implements TypedEmitter {
   }
 
   static serializeEngine(engine: HyperFormula): Buffer {
-    engine._stats.start(StatType.SERIALIZE_ENGINE)
+    engine._stats.start(StatType.SERIALIZE_ENGINE_TOTAL)
 
     const serializer = new AvroSerializer()
     const result = serializer.serialize(engine)
 
-    engine._stats.end(StatType.SERIALIZE_ENGINE)
+    engine._stats.end(StatType.SERIALIZE_ENGINE_TOTAL)
     return result
   }
 
   static restoreEngine(buffer: Buffer): HyperFormula {
     const stats = new Statistics()
-    stats.start(StatType.DESERIALIZE_ENGINE)
+    stats.start(StatType.DESERIALIZE_ENGINE_TOTAL)
 
     const serializer = new AvroSerializer()
     const engine = serializer.restore(buffer, stats)
 
-    stats.end(StatType.DESERIALIZE_ENGINE)
+    stats.end(StatType.DESERIALIZE_ENGINE_TOTAL)
     return engine
   }
 }

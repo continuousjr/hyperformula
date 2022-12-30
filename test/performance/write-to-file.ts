@@ -1,5 +1,6 @@
 import { runBasicBenchmark } from './basic-benchmark'
 import { runCrudsBenchmark } from './cruds-benchmark'
+import { runEngineSerializationBenchmark } from './engine-serialization-benchmark'
 import fs = require('fs')
 
 (() => {
@@ -12,7 +13,9 @@ import fs = require('fs')
 
   const basicResult = runBasicBenchmark()
   const crudsResult = runCrudsBenchmark()
-  const allBenchmarksResult = [ ...basicResult, ...crudsResult ].map(e => ({
+  const serializationResult = runEngineSerializationBenchmark()
+
+  const allBenchmarksResult = [...basicResult, ...crudsResult, ...serializationResult].map(e => ({
     name: e.name,
     totalTime: e.totalTime
   }))

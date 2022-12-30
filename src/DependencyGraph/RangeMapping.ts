@@ -3,11 +3,11 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {AbsoluteCellRange} from '../AbsoluteCellRange'
-import {simpleCellAddress, SimpleCellAddress} from '../Cell'
-import {Maybe} from '../Maybe'
-import {Span} from '../Span'
-import {RangeVertex} from './'
+import { AbsoluteCellRange } from '../AbsoluteCellRange'
+import { simpleCellAddress, SimpleCellAddress } from '../Cell'
+import { Maybe } from '../Maybe'
+import { Span } from '../Span'
+import { RangeVertex } from './'
 
 export interface AdjustRangesResult {
   verticesWithChangedSize: RangeVertex[],
@@ -223,6 +223,18 @@ export class RangeMapping {
     return {
       restRange: range,
     }
+  }
+
+  public get sheets(): IterableIterator<number> {
+    return this.rangeMapping.keys()
+  }
+
+  public getSheetMappings(sheetId: number): Map<string, RangeVertex> {
+    return this.rangeMapping.get(sheetId) || new Map()
+  }
+
+  public setSheetMappings(sheetId: number, mappings: Map<string, RangeVertex>) {
+    this.rangeMapping.set(sheetId, mappings)
   }
 
   private* entriesFromSheet(sheet: number): IterableIterator<[string, RangeVertex]> {

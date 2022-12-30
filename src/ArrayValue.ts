@@ -3,12 +3,20 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {ArraySize} from './ArraySize'
-import {CellError} from './Cell'
-import {EmptyValue, InternalScalarValue, InterpreterValue} from './interpreter/InterpreterValue'
-import {SimpleRangeValue} from './interpreter/SimpleRangeValue'
+import { ArraySize } from './ArraySize'
+import { CellError } from './Cell'
+import { EmptyValue, InternalScalarValue, InterpreterValue } from './interpreter/InterpreterValue'
+import { SimpleRangeValue } from './interpreter/SimpleRangeValue'
+
+export enum ArrayType {
+  NOT_COMPUTED = 'NOT_COMPUTED',
+  ERROR = 'ERROR',
+  VALUE = 'VALUE'
+}
 
 export interface IArray {
+  type: ArrayType,
+
   size: ArraySize,
 
   width(): number,
@@ -21,6 +29,8 @@ export interface IArray {
 }
 
 export class NotComputedArray implements IArray {
+  type = ArrayType.NOT_COMPUTED
+
   constructor(public readonly size: ArraySize) {
   }
 
@@ -43,6 +53,8 @@ export class NotComputedArray implements IArray {
 }
 
 export class ArrayValue implements IArray {
+  type = ArrayType.VALUE
+
   public size: ArraySize
   private readonly array: InternalScalarValue[][]
 
@@ -150,6 +162,8 @@ export class ArrayValue implements IArray {
 }
 
 export class ErroredArray implements IArray {
+  type = ArrayType.ERROR
+
   constructor(
     private readonly error: CellError,
     public readonly size: ArraySize,

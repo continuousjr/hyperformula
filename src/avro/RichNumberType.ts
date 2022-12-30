@@ -1,6 +1,12 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import { SerializationContext } from './SerializationContext'
 import avro, { types } from 'avsc'
 import {
+  CurrencyNumber,
   DateNumber,
   DateTimeNumber,
   NumberType,
@@ -23,6 +29,7 @@ const RichNumberTypes: { [key: string]: RichNumberTypeConstructor } = {
   [NumberType.NUMBER_TIME]: TimeNumber,
   [NumberType.NUMBER_DATETIME]: DateTimeNumber,
   [NumberType.NUMBER_PERCENT]: PercentNumber,
+  [NumberType.NUMBER_CURRENCY]: CurrencyNumber,
 }
 
 export function RichNumberType(context: SerializationContext) {
@@ -32,9 +39,27 @@ export function RichNumberType(context: SerializationContext) {
       name: 'RichNumber',
       logicalType: 'richNumber',
       fields: [
-        {name: 'type', type: 'string'},
+        {
+          name: 'type',
+          type: avro.Type.forSchema({
+            type: 'enum',
+            name: 'RichNumberType',
+            symbols: [
+              NumberType.NUMBER_DATE,
+              NumberType.NUMBER_TIME,
+              NumberType.NUMBER_DATETIME,
+              NumberType.NUMBER_PERCENT,
+              NumberType.NUMBER_CURRENCY
+            ]
+          })
+        },
         {name: 'val', type: 'double'},
-        {name: 'format', type: ['null', 'string']}
+        {
+          name: 'format', type: avro.Type.forTypes([
+            avro.Type.forSchema('null'),
+            avro.Type.forSchema('string')
+          ])
+        }
       ]
     }, {
       logicalTypes: {

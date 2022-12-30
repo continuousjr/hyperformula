@@ -1,24 +1,20 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import avro, { types } from 'avsc'
-import { AddressMapping, DenseStrategy, EmptyCellVertex, SparseStrategy } from '../DependencyGraph'
+import { AddressMapping, CellVertex, DenseStrategy, SparseStrategy } from '../DependencyGraph'
 import { ChooseAddressMapping } from '../DependencyGraph/AddressMapping/ChooseAddressMappingPolicy'
 import { ChooseAddressMappingPolicyType } from './ChooseAddressMappingPolicyType'
 import { AddressMappingEntry, AddressMappingEntryType } from './AddressMappingEntryType'
 import { CellEntry } from './CellEntryType'
-import { VertexWithId } from './VertexWithIdType'
 import { SerializationContext } from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface AddressMappingFields {
   policy: ChooseAddressMapping,
   mappingEntries: AddressMappingEntry[],
-}
-
-export class UnresolvedCellVertex extends EmptyCellVertex {
-  private static NoAddress = {row: -1, col: -1, sheet: -1}
-
-  constructor(public id: number) {
-    super(UnresolvedCellVertex.NoAddress)
-  }
 }
 
 export function AddressMappingType(context: SerializationContext) {
@@ -47,7 +43,7 @@ export function AddressMappingType(context: SerializationContext) {
       fields.mappingEntries.forEach((entry) => {
         const strategy = entry.strategy === 'dense' ? new DenseStrategy(entry.cols, entry.rows) : new SparseStrategy(entry.cols, entry.rows)
         entry.cellEntries.forEach(cellEntry => {
-          strategy.setCell({col: cellEntry.col, row: cellEntry.row}, new UnresolvedCellVertex(cellEntry.vertexId))
+          strategy.setCell({col: cellEntry.col, row: cellEntry.row}, cellEntry.vertex as CellVertex)
         })
 
         addressMapping.addSheet(entry.sheetId, strategy)
@@ -63,7 +59,7 @@ export function AddressMappingType(context: SerializationContext) {
         const cellEntries: CellEntry[] = []
         for (const [address, vertex] of strategy.getEntries(sheetId)) {
           cellEntries.push({
-            vertexId: (vertex as VertexWithId).id,
+            vertex,
             row: address.row,
             col: address.col
           })

@@ -84,6 +84,7 @@
     "typedoc:serve": "npm run typedoc:build && serve doc -p 5005",
     "benchmark:basic": "npm run tsnode test/performance/run-basic-benchmark.ts",
     "benchmark:cruds": "npm run tsnode test/performance/run-cruds-benchmark.ts",
+    "benchmark:engine-serialization": "npm run tsnode test/performance/run-engine-serialization-benchmark.ts",
     "benchmark:write-to-file": "npm run tsnode test/performance/write-to-file.ts",
     "benchmark:compare-benchmarks": "npm run tsnode test/performance/compare-benchmarks.ts",
     "lint": "eslint . --ext .js,.ts",

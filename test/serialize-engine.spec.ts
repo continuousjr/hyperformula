@@ -1,4 +1,5 @@
 import {
+  AlwaysSparse,
   CellError,
   ConfigParams,
   DetailedCellError,
@@ -7,14 +8,54 @@ import {
   RawCellContent,
   SimpleCellAddress
 } from '../src'
-import { FormulaCellVertex } from '../src/DependencyGraph'
-import { AstNodeType, CellAddress, CellReferenceAst, NumberAst, PlusOpAst, StringAst } from '../src/parser'
-import { VertexWithId, VertexWithIdType } from '../src/avro/VertexWithIdType'
+import { FormulaCellVertex, RangeVertex, Vertex } from '../src/DependencyGraph'
+import {
+  AstNodeType,
+  CellAddress,
+  CellRangeAst,
+  CellReferenceAst,
+  ConcatenateOpAst,
+  EqualsOpAst,
+  ErrorAst,
+  GreaterThanOpAst,
+  GreaterThanOrEqualOpAst,
+  LessThanOpAst,
+  LessThanOrEqualOpAst,
+  MinusOpAst,
+  NamedExpressionAst,
+  NotEqualOpAst,
+  NumberAst,
+  PlusOpAst,
+  PowerOpAst,
+  ProcedureAst,
+  StringAst
+} from '../src/parser'
+import { VertexType } from '../src/avro/VertexType'
 import { SimpleCellAddressType } from '../src/avro/SimpleCellAddressType'
 import { AvroTypeCreator, SerializationContext } from '../src/avro/SerializationContext'
 import { AstType } from '../src/avro/AstType'
 import { Config } from '../src/Config'
 import { CellReferenceType } from '../src/parser/CellAddress'
+import { DateNumber } from '../src/interpreter/InterpreterValue'
+import { RichNumberType } from '../src/avro/RichNumberType'
+import {
+  ArrayAst,
+  buildNumberAst,
+  ColumnRangeAst,
+  DivOpAst,
+  EmptyArgAst,
+  ErrorWithRawInputAst,
+  ParenthesisAst,
+  PercentOpAst,
+  RangeSheetReferenceType,
+  RowRangeAst,
+  TimesOpAst
+} from '../src/parser/Ast'
+import { RowAddress } from '../src/parser/RowAddress'
+import { ColumnAddress, ReferenceType } from '../src/parser/ColumnAddress'
+import { simpleCellAddress } from '../src/Cell'
+import { AbsoluteCellRange } from '../src/AbsoluteCellRange'
+import { FormulaVertex } from '../src/DependencyGraph/FormulaCellVertex'
 
 describe('Saving and restoring engine state', () => {
   let engine: HyperFormula
@@ -22,7 +63,42 @@ describe('Saving and restoring engine state', () => {
 
   describe('configuration', () => {
     beforeAll(() => {
-      buildEngine({caseFirst: 'upper'})
+      buildEngine({
+        accentSensitive: true,
+        binarySearchThreshold: 21,
+        currencySymbol: ['^'],
+        caseSensitive: true,
+        caseFirst: 'upper',
+        chooseAddressMappingPolicy: new AlwaysSparse(),
+        dateFormats: ['MM/DD/YYYY', 'MM/DD/YY'],
+        decimalSeparator: ',',
+        evaluateNullToZero: true,
+        functionArgSeparator: '.',
+        ignorePunctuation: true,
+        language: 'enGB',
+        ignoreWhiteSpace: 'any',
+        leapYear1900: true,
+        localeLang: 'fr',
+        matchWholeCell: false,
+        arrayColumnSeparator: ';',
+        arrayRowSeparator: '|',
+        maxRows: 40_001,
+        maxColumns: 18_271,
+        nullYear: 31,
+        nullDate: {year: 1898, month: 11, day: 29},
+        precisionEpsilon: 1e-12,
+        precisionRounding: 13,
+        smartRounding: false,
+        timeFormats: ['mm:hh', 'mm:hh:ss.sss'],
+        thousandSeparator: '',
+        undoLimit: 21,
+        useRegularExpressions: true,
+        useWildcards: false,
+        useColumnIndex: true,
+        useStats: true,
+        useArrayArithmetic: true,
+      })
+
       serializeAndRestore()
     })
 
@@ -46,24 +122,24 @@ describe('Saving and restoring engine state', () => {
     })
 
     it('should restore a string cell', () => {
-      expect(getCellValue('A1')).toEqual('Hello World')
+      expect(getRestoredValue('A1')).toEqual('Hello World')
     })
 
     it('should restore an integer cell', () => {
-      expect(getCellValue('B2')).toEqual(42)
+      expect(getRestoredValue('B2')).toEqual(42)
     })
 
     it('should restore a double cell', () => {
-      expect(getCellValue('C2')).toEqual(25.326)
+      expect(getRestoredValue('C2')).toEqual(25.326)
     })
 
     it('should restore a boolean cell', () => {
-      expect(getCellValue('D3')).toEqual(true)
+      expect(getRestoredValue('D3')).toEqual(true)
     })
 
     it('should restore an error cell', () => {
       const expectedError = new DetailedCellError(new CellError(ErrorType.ERROR, 'Parsing error.'), '#ERROR!')
-      expect(getCellValue('D4')).toEqual(expectedError)
+      expect(getRestoredValue('D4')).toEqual(expectedError)
     })
 
     it('should restore a date cell', () => {
@@ -72,6 +148,14 @@ describe('Saving and restoring engine state', () => {
   })
 
   describe('avro type tests', () => {
+    describe('rich number tests', () => {
+      it('DateNumber', () => {
+        const richNumber = new DateNumber(new Date().getTime(), 'some format')
+
+        const restored = serializeAndRestoreItem(RichNumberType, richNumber)
+        expect(restored).toEqual(richNumber)
+      })
+    })
     describe('ast tests', () => {
       describe('simple string', () => {
         it('with leading whitespace', () => {
@@ -104,7 +188,7 @@ describe('Saving and restoring engine state', () => {
       })
 
       describe('binary operations', () => {
-        it('addition of literals', () => {
+        it('PlusOp', () => {
           const ast: PlusOpAst = {
             type: AstNodeType.PLUS_OP,
             left: {type: AstNodeType.NUMBER, value: 5},
@@ -115,8 +199,125 @@ describe('Saving and restoring engine state', () => {
           expect(restored).toEqual(ast)
         })
 
-        it('other binary operations', () => {
-          fail('implement me')
+        it('MinusOp', () => {
+          const ast: MinusOpAst = {
+            type: AstNodeType.MINUS_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('TimesOp', () => {
+          const ast: TimesOpAst = {
+            type: AstNodeType.TIMES_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('DivOp', () => {
+          const ast: DivOpAst = {
+            type: AstNodeType.DIV_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('Equals', () => {
+          const ast: EqualsOpAst = {
+            type: AstNodeType.EQUALS_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('NotEquals', () => {
+          const ast: NotEqualOpAst = {
+            type: AstNodeType.NOT_EQUAL_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('GreaterThan', () => {
+          const ast: GreaterThanOpAst = {
+            type: AstNodeType.GREATER_THAN_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('GreaterThanOrEqual', () => {
+          const ast: GreaterThanOrEqualOpAst = {
+            type: AstNodeType.GREATER_THAN_OR_EQUAL_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('LessThan', () => {
+          const ast: LessThanOpAst = {
+            type: AstNodeType.LESS_THAN_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('LessThanOrEqual', () => {
+          const ast: LessThanOrEqualOpAst = {
+            type: AstNodeType.LESS_THAN_OR_EQUAL_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('Power', () => {
+          const ast: PowerOpAst = {
+            type: AstNodeType.POWER_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('Concatenate', () => {
+          const ast: ConcatenateOpAst = {
+            type: AstNodeType.CONCATENATE_OP,
+            left: {type: AstNodeType.NUMBER, value: 5},
+            right: {type: AstNodeType.NUMBER, value: 12}
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
         })
       })
 
@@ -152,19 +353,286 @@ describe('Saving and restoring engine state', () => {
           expect(restored).toEqual(ast)
         })
       })
+
+      describe('cell range', () => {
+        it('cell range', () => {
+          const ast: CellRangeAst = {
+            type: AstNodeType.CELL_RANGE,
+            start: new CellAddress(3, 5, CellReferenceType.CELL_REFERENCE_ABSOLUTE_COL, 9),
+            end: new CellAddress(4, 6, CellReferenceType.CELL_REFERENCE_ABSOLUTE, 9),
+            sheetReferenceType: RangeSheetReferenceType.BOTH_ABSOLUTE
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('row range', () => {
+          const ast: RowRangeAst = {
+            type: AstNodeType.ROW_RANGE,
+            start: new RowAddress(ReferenceType.ABSOLUTE, 2),
+            end: new RowAddress(ReferenceType.RELATIVE, 4),
+            sheetReferenceType: RangeSheetReferenceType.RELATIVE
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('column range', () => {
+          const ast: ColumnRangeAst = {
+            type: AstNodeType.COLUMN_RANGE,
+            start: new ColumnAddress(ReferenceType.ABSOLUTE, 2, 8),
+            end: new ColumnAddress(ReferenceType.RELATIVE, 4),
+            sheetReferenceType: RangeSheetReferenceType.START_ABSOLUTE
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+      })
+
+      it('percent', () => {
+        const ast: PercentOpAst = {
+          type: AstNodeType.PERCENT_OP,
+          value: buildNumberAst(.42)
+        }
+
+        const restored = serializeAndRestoreItem(AstType, ast)
+        expect(restored).toEqual(ast)
+      })
+
+      describe('function call', () => {
+        it('empty function call', () => {
+          const ast: ProcedureAst = {
+            type: AstNodeType.FUNCTION_CALL,
+            procedureName: 'someFunc',
+            args: []
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('function call with one argument', () => {
+          const ast: ProcedureAst = {
+            type: AstNodeType.FUNCTION_CALL,
+            procedureName: 'someFunc',
+            args: [
+              {
+                type: AstNodeType.STRING,
+                value: 'hello'
+              }
+            ],
+            leadingWhitespace: '  ',
+            internalWhitespace: ' '
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('function call with several arguments', () => {
+          const ast: ProcedureAst = {
+            type: AstNodeType.FUNCTION_CALL,
+            procedureName: 'anotherFunc',
+            args: [
+              {
+                type: AstNodeType.STRING,
+                value: 'hello'
+              },
+              {
+                type: AstNodeType.STRING,
+                value: 'world'
+              },
+              {
+                type: AstNodeType.NUMBER,
+                value: 42
+              },
+            ],
+            internalWhitespace: ' '
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+      })
+
+      describe('named expressions', () => {
+        it('with no whitespace', () => {
+          const ast: NamedExpressionAst = {
+            type: AstNodeType.NAMED_EXPRESSION,
+            expressionName: 'some expression'
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('with whitespace', () => {
+          const ast: NamedExpressionAst = {
+            type: AstNodeType.NAMED_EXPRESSION,
+            expressionName: 'another expression',
+            leadingWhitespace: ' ',
+            internalWhitespace: '  '
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+      })
+
+      describe('parenthesis', () => {
+        it('with no whitespace', () => {
+          const ast: ParenthesisAst = {
+            type: AstNodeType.PARENTHESIS,
+            expression: buildNumberAst(42),
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('with whitespace', () => {
+          const ast: ParenthesisAst = {
+            type: AstNodeType.PARENTHESIS,
+            expression: buildNumberAst(42),
+            leadingWhitespace: ' ',
+            internalWhitespace: '  '
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+      })
+
+      describe('error', () => {
+        it('with no whitespace', () => {
+          const formulaCellVertex = new FormulaCellVertex(buildNumberAst(42), simpleCellAddress(0, 2, 1), 2)
+          const ast: ErrorAst = {
+            type: AstNodeType.ERROR,
+            error: new CellError(ErrorType.NAME, 'Some Error', formulaCellVertex),
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast, formulaCellVertex)
+          expect(restored).toEqual(ast)
+        })
+
+        it('with whitespace', () => {
+          const formulaCellVertex = new FormulaCellVertex(buildNumberAst(42), simpleCellAddress(0, 2, 1), 2)
+          const ast: ErrorAst = {
+            type: AstNodeType.ERROR,
+            error: new CellError(ErrorType.NAME, 'Some Error', formulaCellVertex),
+            leadingWhitespace: ' '
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast, formulaCellVertex)
+          expect(restored).toEqual(ast)
+        })
+      })
+
+      describe('error with raw input', () => {
+        it('with no whitespace', () => {
+          const formulaCellVertex = new FormulaCellVertex(buildNumberAst(42), simpleCellAddress(0, 2, 1), 2)
+          const ast: ErrorWithRawInputAst = {
+            type: AstNodeType.ERROR_WITH_RAW_INPUT,
+            rawInput: 'Hello',
+            error: new CellError(ErrorType.NAME, 'Some Error', formulaCellVertex),
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast, formulaCellVertex)
+          expect(restored).toEqual(ast)
+        })
+
+        it('with whitespace', () => {
+          const formulaCellVertex = new FormulaCellVertex(buildNumberAst(42), simpleCellAddress(0, 2, 1), 2)
+          const ast: ErrorWithRawInputAst = {
+            type: AstNodeType.ERROR_WITH_RAW_INPUT,
+            error: new CellError(ErrorType.NAME, 'Some Error', formulaCellVertex),
+            rawInput: 'Test',
+            leadingWhitespace: ' '
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast, formulaCellVertex)
+          expect(restored).toEqual(ast)
+        })
+      })
+
+      describe('empty', () => {
+        it('with no whitespace', () => {
+          const ast: EmptyArgAst = {
+            type: AstNodeType.EMPTY,
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('with whitespace', () => {
+          const ast: EmptyArgAst = {
+            type: AstNodeType.EMPTY,
+            leadingWhitespace: '  '
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+      })
+
+      describe('array', () => {
+        it('with no whitespace', () => {
+          const ast: ArrayAst = {
+            type: AstNodeType.ARRAY,
+            args: [
+              [{type: AstNodeType.NUMBER, value: 42}, {type: AstNodeType.NUMBER, value: 43}],
+              [{type: AstNodeType.NUMBER, value: 45}, {type: AstNodeType.NUMBER, value: 46}],
+            ]
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+
+        it('with whitespace', () => {
+          const ast: ArrayAst = {
+            type: AstNodeType.ARRAY,
+            args: [
+              [{type: AstNodeType.NUMBER, value: 42}, {type: AstNodeType.NUMBER, value: 43}],
+              [{type: AstNodeType.NUMBER, value: 45}, {type: AstNodeType.NUMBER, value: 46}],
+            ],
+            leadingWhitespace: '  ',
+            internalWhitespace: ' ',
+          }
+
+          const restored = serializeAndRestoreItem(AstType, ast)
+          expect(restored).toEqual(ast)
+        })
+      })
     })
 
-    it('formula vertex test', () => {
-      const cell = new FormulaCellVertex({type: AstNodeType.STRING, value: 'Hello'} as StringAst, {
-        row: 0,
-        col: 0,
-        sheet: 0
-      }, 2)
-      const cellWithId = cell as VertexWithId
-      cellWithId.id = 25
+    describe('vertex types', () => {
+      it('formula vertex', () => {
+        const vertex = new FormulaCellVertex({
+          type: AstNodeType.STRING,
+          value: 'Hello'
+        } as StringAst, simpleCellAddress(0, 0, 0), 2)
 
-      const restored = serializeAndRestoreItem(VertexWithIdType, cellWithId)
-      expect(restored).toEqual(cell)
+        const restored = serializeAndRestoreItem(VertexType, vertex)
+
+        expect(restored).toEqual(vertex)
+      })
+
+      describe('range vertex', () => {
+        it('simple range vertex', () => {
+          const range = new AbsoluteCellRange(simpleCellAddress(0, 4, 2), simpleCellAddress(0, 5, 3))
+          const vertex = new RangeVertex(range)
+          vertex.bruteForce = true
+
+          const restored = serializeAndRestoreItem(VertexType, vertex)
+
+          expect(restored).toEqual(vertex)
+        })
+      })
     })
 
     it('simple cell address test', () => {
@@ -174,146 +642,102 @@ describe('Saving and restoring engine state', () => {
       expect(restored).toEqual(addr)
     })
 
-    function serializeAndRestoreItem<T, I>(type: AvroTypeCreator<T>, item: I): I {
+    function serializeAndRestoreItem<T, I>(type: AvroTypeCreator<T>, item: I, ...vertices: Vertex[]): I {
       const outEngine = HyperFormula.buildEmpty()
       const outContext = new SerializationContext(outEngine.lazilyTransformingAstService)
+      vertices.forEach(v => {
+        outContext.vertexResolverService.assignId(v)
+      })
       const buffer = type(outContext).AvroType.toBuffer(item)
 
       const inEngine = HyperFormula.buildEmpty()
       const inConfig = new Config(inEngine.getConfig())
       const inContext = new SerializationContext(inEngine.lazilyTransformingAstService, inConfig.translationPackage)
-      return type(inContext).AvroType.fromBuffer(buffer)
+      vertices.forEach(v => {
+        inContext.vertexResolverService.registerVertex(outContext.vertexResolverService.getId(v), v)
+        outContext.vertexResolverService.cleanupItem(v)
+      })
+
+      const fromBuffer = type(inContext).AvroType.fromBuffer(buffer)
+      outContext.vertexResolverService.cleanupItem(item)
+
+      return fromBuffer
     }
   })
 
   describe('formula cells', () => {
     beforeAll(() => {
-      buildEngine()
+      buildEngine({
+        useArrayArithmetic: true
+      })
+      engine.addSheet('Sheet2')
 
       setCellContents('A1', '=5+6')
-      setCellContents('B1', '=A1')
+      setCellContents('B1', '=A1 + 10')
+      setCellContents('Sheet2!C1', 42)
+      setCellContents('B2', '=SUM(A1:B1)')
+      setCellContents('B3', '=SUMIFS(A1:B1, A1:B1, ">12")')
 
-      serializeAndRestore()
+      setCellContents('D1', 5)
+      setCellContents('D2', 10)
+      setCellContents('D3', 15)
+      setCellContents('E1', 2)
+      setCellContents('E2', 2)
+      setCellContents('E3', 4)
+      setCellContents('F1', '={(ISEVEN(D1:D3*E1:E3))}')
+      setCellContents('G1', '=BADFORMULA()')
+      setCellContents('G2', '=SUM(E:E)')
+      setCellContents('G3', '=SUM(2:2)')
     })
 
+    describe('after serialization', () => {
+      beforeAll(() => {
+        serializeAndRestore()
+      })
 
-    it('should restore a simple formula', () => {
-      expect(getCellValue('A1')).toEqual(11)
+      it('should restore a simple formula', () => {
+        expect(getRestoredValue('A1')).toEqual(11)
+      })
+
+      it('should restore a formula with a relative cell reference', () => {
+        expect(getRestoredValue('B1')).toEqual(21)
+      })
+
+      it('should restore a range formula', () => {
+        expect(getRestoredValue('B2')).toEqual(32)
+      })
+
+      it('should restore a range formula with a range condition', () => {
+        expect(getRestoredValue('B3')).toEqual(21)
+      })
+
+      it('should restore a constant number', () => {
+        expect(getRestoredValue('Sheet2!C1')).toEqual(42)
+      })
+
+      it('should restore an array formula', () => {
+        expect(getRestoredValue('F1')).toEqual(true)
+      })
+
+      it('should restore an error formula', () => {
+        const cellError = new CellError(
+          ErrorType.NAME,
+          'Function name BADFORMULA not recognized.',
+          engine.addressMapping.getCell(address('G1')) as FormulaVertex
+        )
+
+        const expectedCellValue = new DetailedCellError(cellError, '#NAME?', '\'Sheet 1\'!G1')
+        expect(getRestoredValue('G1')).toEqual(expectedCellValue)
+      })
+
+      it('should restore a range formula with just columns', () => {
+        expect(getRestoredValue('G2')).toEqual(8)
+      })
+
+      it('should restore a range formula with just rows', () => {
+        expect(getRestoredValue('G3')).toEqual(52)
+      })
     })
-
-    it('should restore a formula with a relative cell reference', () => {
-      expect(getCellValue('B1')).toEqual(11)
-    })
-  })
-
-  describe('temp -- timing', () => {
-    it('all values', () => {
-      const engineData = generateEngineData(
-        2500,
-        100,
-        (r, c) => r + c
-      )
-
-      const sheets = {
-        sheet1: engineData,
-        sheet2: engineData,
-        sheet3: engineData,
-        sheet4: engineData,
-      }
-
-      measureTime(sheets, engineData)
-    })
-
-    it('all simple formulas', () => {
-      const engineData = generateEngineData(
-        2500,
-        100,
-        (r, c) => `=${r}+${c}`
-      )
-
-      const sheets = {
-        sheet1: engineData,
-        sheet2: engineData,
-        sheet3: engineData,
-        sheet4: engineData,
-      }
-
-      measureTime(sheets, engineData)
-    })
-
-    it('1/3 value, 1/3 reference, 1/3 simple', () => {
-      const engineData = generateEngineData(2500, 100,
-        (r, c) => {
-          const bucket = c % 3
-          if (bucket === 0) {
-            return r + c
-          } else if (bucket === 1) {
-            return `=${r}+${c}`
-          } else {
-            const addressRow = r + 1
-            const addressColLessOne = c - 1
-            return `=${addressColLessOne}${addressRow}`;
-          }
-        }
-      )
-
-      const sheets = {
-        sheet1: engineData,
-        sheet2: engineData,
-        sheet3: engineData,
-        sheet4: engineData,
-      }
-
-      measureTime(sheets, engineData)
-    })
-
-    function measureTime(sheets: { sheet3: RawCellContent[][]; sheet4: RawCellContent[][]; sheet1: RawCellContent[][]; sheet2: RawCellContent[][] }, engineData: RawCellContent[][]) {
-      let start = Date.now()
-      engine = HyperFormula.buildFromSheets(sheets)
-      let end = Date.now()
-
-
-      const buildTime = end - start
-      console.log(`Built in ${buildTime} millis`)
-
-      start = Date.now()
-      const serialized = HyperFormula.serializeEngine(engine)
-      end = Date.now()
-
-      const serializeTime = end - start
-      const serializedSize = serialized.length
-      console.log(`Serialized in ${serializeTime} millis`)
-
-      start = Date.now()
-      restoredEngine = HyperFormula.restoreEngine(serialized)
-      end = Date.now()
-
-      const deserializeTime = end - start
-      console.log(`Deserialized in ${deserializeTime} millis`)
-
-      const numCells = engineData.length * engineData[0].length * engine.countSheets()
-      expect({
-        numCells,
-        timing: {
-          buildTime,
-          serializeTime,
-          deserializeTime,
-        },
-        serializedSize,
-      }).toEqual({})
-    }
-
-    function generateEngineData(rows: number, cols: number, valueGenerator: (row: number, col: number) => RawCellContent) {
-      const engineData: RawCellContent[][] = []
-      for (let i = 0; i < rows; i++) {
-        engineData[i] = []
-        for (let j = 0; j < cols; j++) {
-          engineData[i][j] = valueGenerator(i, j)
-        }
-      }
-
-      return engineData
-    }
   })
 
   function buildEngine(config: Partial<ConfigParams> = {}) {
@@ -333,11 +757,7 @@ describe('Saving and restoring engine state', () => {
     engine.setCellContents(address(range), cellContents)
   }
 
-  function setCellContentsForSheet(sheetId: number, range: string, cellContents: RawCellContent[][] | RawCellContent) {
-    engine.setCellContents(address(range, sheetId), cellContents)
-  }
-
-  function getCellValue(range: string, sheetId = 0) {
+  function getRestoredValue(range: string, sheetId = 0) {
     return restoredEngine.getCellValue(address(range, sheetId))
   }
 })

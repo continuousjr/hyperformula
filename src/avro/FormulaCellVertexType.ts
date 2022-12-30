@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import avro, { types } from 'avsc'
 import { SimpleCellAddressType } from './SimpleCellAddressType'
 import { SimpleCellAddress } from '../Cell'
@@ -8,26 +13,27 @@ import { FormulaCellVertex } from '../DependencyGraph'
 import { RichNumberType } from './RichNumberType'
 import { CellErrorType } from './CellErrorType'
 import {
-  CellValueType,
-  PostserializedWrappedCellValue,
-  unwrapCellValue,
-  wrapCellValue,
-  WrappedCellValue
-} from './CellValueType'
+  InterpreterValueType,
+  PostserializedWrappedInterpreterValue,
+  unwrapInterpreterValue,
+  wrapInterpreterValue,
+  WrappedInterpreterValue
+} from './InterpreterValueType'
 import LogicalType = types.LogicalType
 
 interface FormulaCellVertexFields {
   formula: Ast,
   cellAddress: SimpleCellAddress,
   version: number,
-  cachedCellValue: WrappedCellValue,
+  cachedCellValue: WrappedInterpreterValue,
 }
 
 export function FormulaCellVertexType(context: SerializationContext) {
   const astType = context.getType(AstType)
   const cellErrorType = context.getType(CellErrorType)
   const richNumberType = context.getType(RichNumberType)
-  const cellValueType = context.getType(CellValueType)
+  const interpreterValueType = context.getType(InterpreterValueType)
+  const simpleCellAddressType = context.getType(SimpleCellAddressType)
 
   return class FormulaCellVertexType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
@@ -36,13 +42,14 @@ export function FormulaCellVertexType(context: SerializationContext) {
       logicalType: 'formulaCellVertex',
       fields: [
         {name: 'formula', type: astType.AvroType},
-        {name: 'cellAddress', type: context.getType(SimpleCellAddressType).AvroType},
+        {name: 'cellAddress', type: simpleCellAddressType.AvroType},
         {name: 'version', type: 'int'},
-        {name: 'cachedCellValue', type: cellValueType.AvroType}
+        {name: 'cachedCellValue', type: interpreterValueType.AvroType}
       ]
     }, {
       logicalTypes: {
         'formulaCellVertex': FormulaCellVertexType,
+        'simpleCellAddress': simpleCellAddressType,
         'cellError': cellErrorType,
         'richNumber': richNumberType,
         'ast': astType
@@ -51,8 +58,8 @@ export function FormulaCellVertexType(context: SerializationContext) {
 
     protected _fromValue(val: FormulaCellVertexFields): FormulaCellVertex {
       const formulaCellVertex = new FormulaCellVertex(val.formula, val.cellAddress, val.version)
-      const cachedValue = unwrapCellValue(val.cachedCellValue as PostserializedWrappedCellValue)
-      if (cachedValue) {
+      const cachedValue = unwrapInterpreterValue(val.cachedCellValue as PostserializedWrappedInterpreterValue)
+      if (typeof cachedValue !== 'undefined') {
         formulaCellVertex.setCellValue(cachedValue)
       }
 
@@ -69,7 +76,7 @@ export function FormulaCellVertexType(context: SerializationContext) {
         formula,
         cellAddress,
         version: formulaCellVertex.version,
-        cachedCellValue: wrapCellValue(formulaCellVertex.valueOrUndef())
+        cachedCellValue: wrapInterpreterValue(formulaCellVertex.valueOrUndef())
       }
 
       return result

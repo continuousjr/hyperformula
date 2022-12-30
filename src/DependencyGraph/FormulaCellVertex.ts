@@ -83,7 +83,7 @@ export abstract class FormulaVertex extends BaseVertex {
 }
 
 export class ArrayVertex extends FormulaVertex {
-  private static TYPE = 'ARRAY_VERTEX'
+  public static TYPE = 'ARRAY_VERTEX'
 
   array: IArray
 

@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import avro, { types } from 'avsc'
 import { SimpleCellAddress } from '../Cell'
 import { InternalNamedExpression, NamedExpressionOptions } from '../NamedExpressions'
@@ -9,7 +14,7 @@ interface InternalNamedExpressionFields {
   displayName: string,
   address: SimpleCellAddress,
   added: boolean,
-  options?: NamedExpressionOptions
+  options?: NamedExpressionOptions,
 }
 
 export function InternalNamedExpressionType(context: SerializationContext) {
@@ -33,6 +38,10 @@ export function InternalNamedExpressionType(context: SerializationContext) {
           })
         },
       ]
+    }, {
+      logicalTypes: {
+        'internalNamedExpression': InternalNamedExpressionType
+      }
     })
 
     protected _fromValue(fields: InternalNamedExpressionFields): InternalNamedExpression {

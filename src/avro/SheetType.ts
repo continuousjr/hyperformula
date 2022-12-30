@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import avro, { types } from 'avsc'
 import { Sheet } from '../DependencyGraph/SheetMapping'
 import { SerializationContext } from './SerializationContext'
@@ -8,7 +13,7 @@ interface SheetFields {
   displayName: string,
 }
 
-export function SheetType(context: SerializationContext) {
+export function SheetType(_context: SerializationContext) {
   return class SheetType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',
@@ -18,6 +23,10 @@ export function SheetType(context: SerializationContext) {
         {name: 'id', type: 'int'},
         {name: 'displayName', type: 'string'}
       ]
+    }, {
+      logicalTypes: {
+        'sheet': SheetType
+      }
     })
 
     protected _fromValue(fields: SheetFields): Sheet {

@@ -1,13 +1,22 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import avro from 'avsc'
 import { SerializationContext } from './SerializationContext'
+import { Vertex } from '../DependencyGraph'
+import { VertexRefType } from './VertexRefType'
 
 export interface CellEntry {
   row: number,
   col: number,
-  vertexId: number,
+  vertex: Vertex,
 }
 
 export function CellEntryType(context: SerializationContext) {
+  const vertexRefType = context.getType(VertexRefType)
+
   return class CellEntryType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',
@@ -15,8 +24,12 @@ export function CellEntryType(context: SerializationContext) {
       fields: [
         {name: 'row', type: 'int'},
         {name: 'col', type: 'int'},
-        {name: 'vertexId', type: 'long'}
+        {name: 'vertex', type: vertexRefType.AvroType}
       ],
+    }, {
+      logicalTypes: {
+        'vertexRef': vertexRefType
+      }
     })
   }
 }

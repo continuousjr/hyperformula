@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import avro, { types } from 'avsc'
 import { ArrayMapping } from '../DependencyGraph'
 import { SerializationContext } from './SerializationContext'

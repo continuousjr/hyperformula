@@ -1,5 +1,5 @@
-import {CellValue, ConfigParams, HyperFormula, Sheet} from '../../src'
-import {Maybe} from '../../src/Maybe'
+import { CellValue, ConfigParams, HyperFormula, Sheet } from '../../src'
+import { Maybe } from '../../src/Maybe'
 import {
   average,
   EnrichedStatType,
@@ -9,7 +9,8 @@ import {
   reduceStats,
   Stats,
   statsTreePrint,
-  statsTreePrintCruds
+  statsTreePrintCruds,
+  statsTreePrintSerialization
 } from './utils/stats'
 
 export interface Config {
@@ -32,9 +33,14 @@ export interface ExpectedValue {
   value: CellValue,
 }
 
+export interface EngineAndExpectedValues {
+  engine: HyperFormula,
+  expectedValues: Record<string, ExpectedValue[]>,
+}
+
 export interface BenchmarkResult {
   name: string,
-  engine: HyperFormula,
+  engine?: HyperFormula,
   totalTime: number,
   statistics: Stats,
 }
@@ -63,6 +69,8 @@ export function benchmarkCruds(name: string, sheet: Sheet, cruds: (engine: Hyper
     return
   }
 
+  engine.destroy()
+
   const totalTime = statistics.get(ExtStatType.CRUDS_TOTAL) || 0
   statsTreePrintCruds(statistics)
 
@@ -71,6 +79,56 @@ export function benchmarkCruds(name: string, sheet: Sheet, cruds: (engine: Hyper
     engine: engine,
     totalTime: totalTime,
     statistics: statistics,
+  }
+}
+
+export function benchmarkEngineSerialization(name: string, sheetData: Sheet, expectedValues: ExpectedValue[], userConfig: Partial<Config> = defaultConfig) {
+  console.info(`=== Serialization Benchmark - ${name} === `)
+
+  const config = Object.assign({}, defaultConfig, userConfig)
+
+  const engine = HyperFormula.buildFromSheets({sheet: sheetData}, {
+    useStats: true,
+    licenseKey: 'gpl-v3',
+  })
+
+  const statistics: Map<EnrichedStatType, number>[] = []
+  let currentRun = 0
+
+  do {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    engine._stats.reset()
+    const serialized = HyperFormula.serializeEngine(engine)
+    const deserializedEngine = HyperFormula.restoreEngine(serialized)
+
+    const engineStats = new Map([...engine.getStats().entries(), ...deserializedEngine.getStats().entries()])
+    statistics.push(engineStats)
+
+    currentRun++
+
+    if (!validate(deserializedEngine, expectedValues)) {
+      console.error('Sheet validation error')
+      if (process.exit) {
+        process.exit(1)
+      }
+      return
+    }
+
+    deserializedEngine.destroy()
+  } while (currentRun < config.numberOfRuns)
+
+  engine.destroy()
+
+  const averages = reduceStats(statistics, average)
+  statsTreePrintSerialization(averages)
+  const totalTime = (averages.get(EnrichedStatType.SERIALIZE_ENGINE_TOTAL) || 0) +
+    (averages.get(EnrichedStatType.DESERIALIZE_ENGINE_TOTAL) || 0)
+
+  return {
+    name: name,
+    statistics: averages,
+    totalTime: totalTime
   }
 }
 
@@ -108,6 +166,8 @@ function benchmarkBuild(name: string, runEngine: (engineConfig?: Partial<ConfigP
       }
       return
     }
+
+    engine.destroy()
   } while (currentRun < config.numberOfRuns)
 
   const averages = reduceStats(statistics, average)
@@ -122,13 +182,13 @@ function benchmarkBuild(name: string, runEngine: (engineConfig?: Partial<ConfigP
   }
 }
 
-function validate(engine: HyperFormula, expectedValues: ExpectedValue[]) {
+function validate(engine: HyperFormula, expectedValues: ExpectedValue[], sheetId: number = 0) {
   let valid = true
 
   for (let i = 0; i < expectedValues.length; ++i) {
     let expectedValue = expectedValues[i].value
 
-    const address = engine.simpleCellAddressFromString(expectedValues[i].address, 0)!
+    const address = engine.simpleCellAddressFromString(expectedValues[i].address, sheetId)!
     let actualValue = engine.getCellValue(address)
 
     if (typeof expectedValue === 'number' && typeof actualValue === 'number') {

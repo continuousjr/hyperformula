@@ -94,7 +94,7 @@ export class DependencyGraph {
       functionRegistry,
       namedExpressions,
       graphState
-    );
+    )
   }
 
   public setFormulaToCell(address: SimpleCellAddress, ast: Ast, dependencies: CellDependency[], size: ArraySize, hasVolatileFunction: boolean, hasStructuralChangeFunction: boolean): ContentChanges {

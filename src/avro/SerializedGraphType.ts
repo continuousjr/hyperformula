@@ -1,14 +1,16 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import avro, { Schema, TypeOptions, types } from 'avsc'
-import { Graph, ValueCellVertex, Vertex } from '../DependencyGraph'
-import { VertexWithId, VertexWithIdType } from './VertexWithIdType'
-import { CellError } from '../Cell'
-import { FormulaVertex } from '../DependencyGraph/FormulaCellVertex'
+import { Vertex } from '../DependencyGraph'
+import { VertexType } from './VertexType'
 import { SerializationContext } from './SerializationContext'
-import { UnresolvedCellError } from './CellErrorType'
+import { VertexRefType } from './VertexRefType'
 import LogicalType = types.LogicalType
 
 export interface SerializedGraphState<T> {
-  nodeMap?: Map<number, T>,
   nodes: Set<T>,
   specialNodes: Set<T>,
   specialNodesStructuralChanges: Set<T>,
@@ -17,26 +19,37 @@ export interface SerializedGraphState<T> {
   edges: Map<T, Set<T>>,
 }
 
-interface SerializedGraphStateFields<T> {
-  nodes: T[],
-  nodeMap?: Map<number, T>,
-  specialNodes: number[],
-  specialNodesStructuralChanges: number[],
-  specialNodesRecentlyChanged: number[],
-  infiniteRanges: number[],
+interface SerializedGraphStateFields {
+  nodes: Vertex[],
+  specialNodes: Vertex[],
+  specialNodesStructuralChanges: Vertex[],
+  specialNodesRecentlyChanged: Vertex[],
+  infiniteRanges: Vertex[],
   edges: Map<number, number[]>,
 }
 
 
 export function SerializedGraphType(context: SerializationContext) {
-  const vertexWithIdType = context.getType(VertexWithIdType)
+  const vertexType = context.getType(VertexType)
+  const vertexRefType = context.getType(VertexRefType)
 
-  const VertexWithIdArray = avro.Type.forSchema({
+  const {vertexResolverService} = context
+
+  const VertexArray = avro.Type.forSchema({
     type: 'array',
-    items: vertexWithIdType.AvroType
+    items: vertexType.AvroType
   }, {
     logicalTypes: {
-      'vertexWithId': vertexWithIdType
+      'vertex': vertexType
+    }
+  })
+
+  const VertexRefArray = avro.Type.forSchema({
+    type: 'array',
+    items: vertexRefType.AvroType
+  }, {
+    logicalTypes: {
+      'vertexRef': vertexRefType
     }
   })
 
@@ -46,23 +59,31 @@ export function SerializedGraphType(context: SerializationContext) {
       name: 'Graph',
       logicalType: 'graph',
       fields: [
-        {name: 'nodes', type: VertexWithIdArray},
-        {name: 'specialNodes', type: VertexWithIdArray},
+        {name: 'nodes', type: VertexArray},
+        {name: 'specialNodes', type: VertexRefArray},
         {
           name: 'specialNodesStructuralChanges',
-          type: VertexWithIdArray
+          type: VertexRefArray
         },
         {
           name: 'specialNodesRecentlyChanged',
-          type: VertexWithIdArray
+          type: VertexRefArray
         },
-        {name: 'infiniteRanges', type: VertexWithIdArray},
-        {name: 'edges', type: avro.Type.forSchema({type: 'map', values: vertexWithIdType.AvroType})},
+        {name: 'infiniteRanges', type: VertexRefArray},
+        {
+          name: 'edges', type: avro.Type.forSchema({
+            type: 'map', values: avro.Type.forSchema({
+              type: 'array',
+              items: 'long'
+            })
+          })
+        },
       ],
     }, {
       logicalTypes: {
         'graph': SerializedGraphType,
-        'vertexWithId': vertexWithIdType
+        'vertex': vertexType,
+        'vertexRef': vertexRefType
       }
     })
 
@@ -70,66 +91,36 @@ export function SerializedGraphType(context: SerializationContext) {
       super(schema, opts)
     }
 
-    protected _fromValue(graphState: SerializedGraphStateFields<VertexWithId>): SerializedGraphState<Vertex> {
-      const errorCells: ValueCellVertex[] = []
-
-      const nodeMap = graphState.nodes.reduce((acc, node) => {
-        acc.set(node.id, node)
-
-        if (node instanceof ValueCellVertex && node.getCellValue() instanceof CellError) {
-          errorCells.push(node)
-        }
-
-        return acc
-      }, new Map<number, Vertex>())
-
-      errorCells.forEach(cell => {
-        const unresolved = cell.getCellValue() as UnresolvedCellError
-        if (unresolved.rootId) {
-          const rootVertex = nodeMap.get(unresolved.rootId)
-          if (rootVertex) {
-            unresolved.attachRootVertex(rootVertex as FormulaVertex)
-          }
-          delete unresolved.rootId
-        }
-      })
-
+    protected _fromValue(graphState: SerializedGraphStateFields): SerializedGraphState<Vertex> {
       return {
-        nodeMap,
         nodes: new Set(graphState.nodes),
-        specialNodes: new Set(graphState.specialNodes.map(id => nodeMap.get(id) as Vertex)),
-        specialNodesStructuralChanges: new Set(graphState.specialNodesStructuralChanges.map(id => nodeMap.get(id) as Vertex)),
-        specialNodesRecentlyChanged: new Set(graphState.specialNodesRecentlyChanged.map(id => nodeMap.get(id) as Vertex)),
-        infiniteRanges: new Set(graphState.infiniteRanges.map(id => nodeMap.get(id) as Vertex)),
+        specialNodes: new Set(graphState.specialNodes),
+        specialNodesStructuralChanges: new Set(graphState.specialNodesStructuralChanges),
+        specialNodesRecentlyChanged: new Set(graphState.specialNodesRecentlyChanged),
+        infiniteRanges: new Set(graphState.infiniteRanges),
         edges: new Map(
           Array.from(graphState.edges,
             (
               [source, targets]) =>
-              ([nodeMap.get(source) as Vertex, new Set(Array.from(targets).map(id => nodeMap.get(id) as Vertex))])
+              ([vertexResolverService.fromId(source), new Set(Array.from(targets).map(t => vertexResolverService.fromId(t)))])
           )
         ),
       }
     }
 
-    protected _toValue(val: SerializedGraphState<Vertex>): SerializedGraphStateFields<VertexWithId> {
-      const nodes = Array.from(val.nodes as Set<VertexWithId>,
-        (n: VertexWithId, idx) => {
-          n.id = idx
-
-          return n
-        })
-
+    protected _toValue(val: SerializedGraphState<Vertex>): SerializedGraphStateFields {
+      const nodes = Array.from(val.nodes)
       return {
-        nodes,
-        specialNodes: Array.from(val.specialNodes).map(v => (v as VertexWithId).id),
-        specialNodesStructuralChanges: Array.from(val.specialNodesStructuralChanges).map(v => (v as VertexWithId).id),
-        specialNodesRecentlyChanged: Array.from(val.specialNodesRecentlyChanged).map(v => (v as VertexWithId).id),
-        infiniteRanges: Array.from(val.infiniteRanges).map(v => (v as VertexWithId).id),
+        nodes: nodes,
+        specialNodes: Array.from(val.specialNodes),
+        specialNodesStructuralChanges: Array.from(val.specialNodesStructuralChanges),
+        specialNodesRecentlyChanged: Array.from(val.specialNodesRecentlyChanged),
+        infiniteRanges: Array.from(val.infiniteRanges),
         edges: new Map(
           Array.from(val.edges,
             (
               [source, targets]) =>
-              ([(source as VertexWithId).id, Array.from(targets).map(v => (v as VertexWithId).id)])
+              ([vertexResolverService.getId(source), Array.from(targets).map(v => vertexResolverService.getId(v))])
           )
         ),
       }

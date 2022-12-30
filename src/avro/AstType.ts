@@ -1,24 +1,37 @@
-import avro, { types } from 'avsc'
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
+import avro, { schema, types } from 'avsc'
 import { CellAddressType } from './CellAddressType'
 import { CellErrorType } from './CellErrorType'
 import { Ast, AstNodeType } from '../parser'
 import { SerializationContext } from './SerializationContext'
+import { ColumnAddressType } from './ColumnAddressType'
+import { RowAddressType } from './RowAddressType'
 import LogicalType = types.LogicalType
-
-const RangeSheetReferenceEnumType = avro.Type.forSchema({
-    type: 'enum',
-    name: 'RangeSheetReferenceType',
-    symbols: ['RELATIVE', 'START_ABSOLUTE', 'BOTH_ABSOLUTE']
-  }
-)
+import RecordType = schema.RecordType
 
 interface AstFields {
-  value: { [key: string]: Ast },
+  value: { [key: string]: Partial<Ast> },
 }
+
+const binaryOpSchema = (type: string): RecordType => ({
+  type: 'record',
+  name: type,
+  fields: [
+    {name: 'left', type: 'Ast'},
+    {name: 'right', type: 'Ast'},
+    {name: 'leadingWhitespace', type: 'string', default: ''},
+  ]
+})
 
 export function AstType(context: SerializationContext) {
   const cellErrorType = CellErrorType(context)
   const cellAddressType = CellAddressType(context)
+  const columnAddressType = ColumnAddressType(context)
+  const rowAddressType = RowAddressType(context)
 
   return class AstType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
@@ -33,7 +46,6 @@ export function AstType(context: SerializationContext) {
               type: 'record',
               name: AstNodeType.STRING,
               fields: [
-                {name: 'type', type: 'string'},
                 {name: 'value', type: 'string'},
                 {name: 'leadingWhitespace', type: 'string', default: ''},
               ],
@@ -42,147 +54,126 @@ export function AstType(context: SerializationContext) {
               type: 'record',
               name: AstNodeType.NUMBER,
               fields: [
-                {name: 'type', type: 'string'},
                 {name: 'value', type: 'double'},
                 {name: 'leadingWhitespace', type: 'string', default: ''},
               ]
             },
-            {
-              type: 'record',
-              name: 'BINARY_OP',
-              fields: [
-                {name: 'type', type: 'string'},
-                {name: 'left', type: 'Ast'},
-                {name: 'right', type: 'Ast'},
-                {name: 'leadingWhitespace', type: 'string', default: ''},
-              ]
-            },
+            binaryOpSchema(AstNodeType.PLUS_OP),
+            binaryOpSchema(AstNodeType.MINUS_OP),
+            binaryOpSchema(AstNodeType.TIMES_OP),
+            binaryOpSchema(AstNodeType.DIV_OP),
+            binaryOpSchema(AstNodeType.EQUALS_OP),
+            binaryOpSchema(AstNodeType.NOT_EQUAL_OP),
+            binaryOpSchema(AstNodeType.GREATER_THAN_OP),
+            binaryOpSchema(AstNodeType.GREATER_THAN_OR_EQUAL_OP),
+            binaryOpSchema(AstNodeType.LESS_THAN_OP),
+            binaryOpSchema(AstNodeType.LESS_THAN_OR_EQUAL_OP),
+            binaryOpSchema(AstNodeType.POWER_OP),
+            binaryOpSchema(AstNodeType.CONCATENATE_OP),
             {
               type: 'record',
               name: AstNodeType.CELL_REFERENCE,
               fields: [
-                {name: 'type', type: 'string'},
                 {name: 'reference', type: cellAddressType.AvroType},
                 {name: 'leadingWhitespace', type: 'string', default: ''},
               ]
             },
-            /*{
+            {
               type: 'record',
-              name: 'CellRangeAst',
+              name: AstNodeType.CELL_RANGE,
               fields: [
-                {name: 'type', type: 'string'},
                 {name: 'start', type: cellAddressType.AvroType},
                 {name: 'end', type: cellAddressType.AvroType},
-                {name: 'leadingWhitespace', type: 'string'},
+                {name: 'sheetReferenceType', type: 'int'},
+                {name: 'leadingWhitespace', type: 'string', default: ''},
               ]
             },
             {
               type: 'record',
-              name: 'ColumnRangeAst',
+              name: AstNodeType.COLUMN_RANGE,
               fields: [
-                {name: 'type', type: 'string'},
-                {name: 'start', type: cellAddressType.AvroType},
-                {name: 'end', type: cellAddressType.AvroType},
-                {name: 'sheetReferenceType', type: RangeSheetReferenceEnumType},
-                {name: 'leadingWhitespace', type: 'string'},
+                {name: 'start', type: columnAddressType.AvroType},
+                {name: 'end', type: columnAddressType.AvroType},
+                {name: 'sheetReferenceType', type: 'int'},
+                {name: 'leadingWhitespace', type: 'string', default: ''},
               ]
             },
             {
               type: 'record',
-              name: 'RowRangeAst',
+              name: AstNodeType.ROW_RANGE,
               fields: [
-                {name: 'type', type: 'string'},
-                {name: 'start', type: cellAddressType.AvroType},
-                {name: 'end', type: cellAddressType.AvroType},
-                {name: 'sheetReferenceType', type: RangeSheetReferenceEnumType},
-                {name: 'leadingWhitespace', type: 'string'},
+                {name: 'start', type: rowAddressType.AvroType},
+                {name: 'end', type: rowAddressType.AvroType},
+                {name: 'sheetReferenceType', type: 'int'},
+                {name: 'leadingWhitespace', type: 'string', default: ''},
               ]
             },
             {
               type: 'record',
-              name: 'PercentOpAst',
+              name: AstNodeType.PERCENT_OP,
               fields: [
-                {name: 'type', type: 'string'},
                 {name: 'value', type: 'Ast'},
-                {name: 'leadingWhitespace', type: 'string'},
+                {name: 'leadingWhitespace', type: 'string', default: ''},
               ]
             },
             {
               type: 'record',
-              name: 'BinaryOpAst',
+              name: AstNodeType.FUNCTION_CALL,
               fields: [
-                {name: 'type', type: 'string'},
-                {name: 'left', type: 'Ast'},
-                {name: 'right', type: 'Ast'},
-                {name: 'leadingWhitespace', type: 'string'},
-              ]
-            },
-            {
-              type: 'record',
-              name: 'ProcedureAst',
-              fields: [
-                {name: 'type', type: 'string'},
                 {name: 'procedureName', type: 'string'},
                 {name: 'args', type: {type: 'array', items: 'Ast'}},
-                {name: 'leadingWhitespace', type: 'string'},
-                {name: 'internalWhitespace', type: 'string'},
+                {name: 'leadingWhitespace', type: 'string', default: ''},
+                {name: 'internalWhitespace', type: 'string', default: ''},
               ]
             },
             {
               type: 'record',
-              name: 'NamedExpressionAst',
+              name: AstNodeType.NAMED_EXPRESSION,
               fields: [
-                {name: 'type', type: 'string'},
                 {name: 'expressionName', type: 'string'},
-                {name: 'leadingWhitespace', type: 'string'},
-                {name: 'internalWhitespace', type: 'string'},
+                {name: 'leadingWhitespace', type: 'string', default: ''},
+                {name: 'internalWhitespace', type: 'string', default: ''},
               ]
             },
             {
               type: 'record',
-              name: 'ParenthesisAst',
+              name: AstNodeType.PARENTHESIS,
               fields: [
-                {name: 'type', type: 'string'},
                 {name: 'expression', type: 'Ast'},
-                {name: 'leadingWhitespace', type: 'string'},
-                {name: 'internalWhitespace', type: 'string'},
+                {name: 'leadingWhitespace', type: 'string', default: ''},
+                {name: 'internalWhitespace', type: 'string', default: ''},
               ]
             },
             {
               type: 'record',
-              name: 'ErrorAst',
+              name: AstNodeType.ERROR,
               fields: [
-                {name: 'type', type: 'string'},
                 {name: 'error', type: cellErrorType.AvroType},
-                {name: 'leadingWhitespace', type: 'string'},
+                {name: 'leadingWhitespace', type: 'string', default: ''},
               ]
             },
             {
               type: 'record',
-              name: 'ErrorWithRawInputAst',
+              name: AstNodeType.ERROR_WITH_RAW_INPUT,
               fields: [
-                {name: 'type', type: 'string'},
                 {name: 'rawInput', type: 'string'},
                 {name: 'error', type: cellErrorType.AvroType},
-                {name: 'leadingWhitespace', type: 'string'},
-
+                {name: 'leadingWhitespace', type: 'string', default: ''},
               ]
             },
             {
               type: 'record',
-              name: 'EmptyArgAst',
+              name: AstNodeType.EMPTY,
               fields: [
-                {name: 'type', type: 'string'},
-                {name: 'leadingWhitespace', type: 'string'},
+                {name: 'leadingWhitespace', type: 'string', default: ''},
               ]
             },
             {
               type: 'record',
-              name: 'ArrayAst',
+              name: AstNodeType.ARRAY,
               fields: [
-                {name: 'type', type: 'string'},
-                {name: 'leadingWhitespace', type: 'string'},
-                {name: 'internalWhitespace', type: 'string'},
+                {name: 'leadingWhitespace', type: 'string', default: ''},
+                {name: 'internalWhitespace', type: 'string', default: ''},
                 {
                   name: 'args',
                   type: {
@@ -194,8 +185,7 @@ export function AstType(context: SerializationContext) {
                   }
                 }
               ]
-            },*/
-
+            },
           ]
         }
       ],
@@ -203,37 +193,32 @@ export function AstType(context: SerializationContext) {
       logicalTypes: {
         'ast': AstType,
         'cellError': cellErrorType,
-        'cellAddress': cellAddressType
+        'cellAddress': cellAddressType,
+        'columnAddress': columnAddressType,
+        'rowAddress': rowAddressType,
       }
     })
 
 
     protected _fromValue(val: any): Ast {
       const unwrapped = val.value.unwrap()
+      const type = Object.keys(val.value)[0]
+      unwrapped.type = type
+
       if (unwrapped.leadingWhitespace === '') {
         delete unwrapped.leadingWhitespace
       }
 
-      if (unwrapped.leadingWhitespace === '') {
-        delete unwrapped.leadingWhitespace
+      if (unwrapped.internalWhitespace === '') {
+        delete unwrapped.internalWhitespace
       }
 
       return unwrapped
     }
 
     protected _toValue(ast: Ast): AstFields {
-      let type: string = ast.type
-      switch (ast.type) {
-        case AstNodeType.PLUS_OP:
-        case AstNodeType.MINUS_OP:
-        case AstNodeType.TIMES_OP:
-        case AstNodeType.DIV_OP:
-          type = 'BINARY_OP'
-          break
-        default:
-          type = ast.type
-          break
-      }
+      const type = ast.type
+
       return {
         value: {[type]: ast}
       }

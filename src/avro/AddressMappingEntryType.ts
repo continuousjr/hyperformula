@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import avro from 'avsc'
 import { CellEntry, CellEntryType } from './CellEntryType'
 import { SerializationContext } from './SerializationContext'

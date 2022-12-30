@@ -64,6 +64,8 @@ export class BuildEngineFactory {
   }
 
   public static buildFromSerializedEngineState(serializedState: SerializedEngineState, stats: Statistics): EngineState {
+    stats.start(StatType.BUILD_ENGINE_FROM_DESERIALIZED_STATE)
+
     const {
       arrayMapping,
       lazilyTransformingAstService,
@@ -74,7 +76,7 @@ export class BuildEngineFactory {
       addressMapping,
       config: configParams
     } = serializedState
-    const config = new Config(configParams)
+    const config = new Config(configParams, false)
     const functionRegistry = new FunctionRegistry(config)
 
     const dependencyGraph = DependencyGraph.build(
@@ -88,7 +90,10 @@ export class BuildEngineFactory {
       namedExpressions, stats
     )
 
-    return this.assembleEngine(config, dependencyGraph, sheetMapping, lazilyTransformingAstService!, functionRegistry, namedExpressions, stats)
+    const engine = this.assembleEngine(config, dependencyGraph, sheetMapping, lazilyTransformingAstService!, functionRegistry, namedExpressions, stats)
+
+    stats.end(StatType.BUILD_ENGINE_FROM_DESERIALIZED_STATE)
+    return engine
   }
 
   public static rebuildWithConfig(config: Config, sheets: Sheets, namedExpressions: SerializedNamedExpression[], stats: Statistics): EngineState {

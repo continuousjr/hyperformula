@@ -16,7 +16,7 @@ export class EmptyCellVertex extends BaseVertex {
   constructor(
     public address: SimpleCellAddress //might be outdated!
   ) {
-    super(EmptyCellVertex.TYPE);
+    super(EmptyCellVertex.TYPE)
   }
 
   /**

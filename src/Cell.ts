@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {ArrayVertex, CellVertex, FormulaCellVertex, ParsingErrorVertex, ValueCellVertex} from './DependencyGraph'
-import {FormulaVertex} from './DependencyGraph/FormulaCellVertex'
-import {ErrorMessage} from './error-message'
+import { ArrayVertex, CellVertex, FormulaCellVertex, ParsingErrorVertex, ValueCellVertex } from './DependencyGraph'
+import { FormulaVertex } from './DependencyGraph/FormulaCellVertex'
+import { ErrorMessage } from './error-message'
 import {
   EmptyValue,
   getFormatOfExtendedNumber,
@@ -14,10 +14,10 @@ import {
   isExtendedNumber,
   NumberType,
 } from './interpreter/InterpreterValue'
-import {SimpleRangeValue} from './interpreter/SimpleRangeValue'
-import {Maybe} from './Maybe'
-import {CellAddress} from './parser'
-import {AddressWithSheet} from './parser/Address'
+import { SimpleRangeValue } from './interpreter/SimpleRangeValue'
+import { Maybe } from './Maybe'
+import { CellAddress } from './parser'
+import { AddressWithSheet } from './parser/Address'
 
 /**
  * Possible errors returned by our interpreter.
@@ -150,7 +150,7 @@ export class CellError {
   constructor(
     public readonly type: ErrorType,
     public readonly message?: string,
-    public readonly root?: FormulaVertex
+    public root?: FormulaVertex
   ) {
   }
 

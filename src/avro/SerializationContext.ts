@@ -1,6 +1,12 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import { LazilyTransformingAstService } from '../LazilyTransformingAstService'
 import { Schema, Type, TypeOptions } from 'avsc'
 import { TranslationPackage } from '../i18n'
+import { VertexResolverService } from './VertexResolverService'
 
 export interface SimpleAvroType<T> {
   new(): T,
@@ -19,6 +25,7 @@ export type AvroTypeCreator<T> = (context: SerializationContext) => AvroType<T>
 
 export class SerializationContext {
   private typeMap = new Map<string, AvroType<unknown>>()
+  public readonly vertexResolverService = new VertexResolverService()
 
   constructor(
     public lazilyTransformingAstService: LazilyTransformingAstService,

@@ -1,5 +1,5 @@
-import {HyperFormula} from '../../../src'
-import {StatType} from '../../../src/statistics'
+import { HyperFormula } from '../../../src'
+import { StatType } from '../../../src/statistics'
 
 export type Stats = Map<EnrichedStatType, number>
 
@@ -49,6 +49,17 @@ export function statsTreePrint(stats: Stats): void {
 |    |    |TOP_SORT:                        ${stats.get(EnrichedStatType.TOP_SORT) || 0}
 |    |EVALUATION:                           ${stats.get(EnrichedStatType.EVALUATION) || 0}
 |    |    |VLOOKUP:                         ${stats.get(EnrichedStatType.VLOOKUP) || 0}
+________________________________________________\n`
+  console.log(str)
+}
+
+export function statsTreePrintSerialization(stats: Stats): void {
+  const str =
+    `________________________________________________
+|SERIALIZE_ENGINE_TOTAL:                    ${stats.get(EnrichedStatType.SERIALIZE_ENGINE_TOTAL) || 0}
+|DESERIALIZE_ENGINE_TOTAL:                  ${stats.get(EnrichedStatType.DESERIALIZE_ENGINE_TOTAL) || 0}
+|    |DESERIALIZE_ENGINE_STATE:             ${stats.get(EnrichedStatType.DESERIALIZE_ENGINE_STATE) || 0}
+|    |BUILD_ENGINE_FROM_SERIALIZED_STATE:   ${stats.get(EnrichedStatType.BUILD_ENGINE_FROM_DESERIALIZED_STATE) || 0}
 ________________________________________________\n`
   console.log(str)
 }

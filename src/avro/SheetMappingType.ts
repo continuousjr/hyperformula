@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import avro, { types } from 'avsc'
 import { SheetMapping } from '../DependencyGraph'
 import { Sheet } from '../DependencyGraph/SheetMapping'
@@ -6,11 +11,11 @@ import { SerializationContext } from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface SheetMappingFields {
-  sheets: Sheet[]
+  sheets: Sheet[],
 }
 
 export function SheetMappingType(context: SerializationContext) {
-  const sheetType = context.getType(SheetType);
+  const sheetType = context.getType(SheetType)
 
   return class SheetMappingType extends LogicalType {
     public static AvroType = avro.Type.forSchema({

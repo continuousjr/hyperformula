@@ -1,11 +1,15 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import { HyperFormula } from '../HyperFormula'
 import { SerializedEngineState, SerializedEngineType } from './SerializedEngineState'
-import { Statistics } from '../statistics'
+import { Statistics, StatType } from '../statistics'
 import { SerializedGraphState } from './SerializedGraphType'
-import { CellVertex, Vertex } from '../DependencyGraph'
-import { UnresolvedCellVertex } from './AddressMappingType'
 import { SerializationContext } from './SerializationContext'
 import { LazilyTransformingAstService } from '../LazilyTransformingAstService'
+import { Vertex } from '../DependencyGraph'
 
 export class AvroSerializer {
   serialize(engine: HyperFormula): Buffer {
@@ -42,13 +46,9 @@ export class AvroSerializer {
   restore(buffer: Buffer, stats: Statistics): HyperFormula {
     const context: SerializationContext = new SerializationContext(new LazilyTransformingAstService(stats))
 
+    stats.start(StatType.DESERIALIZE_ENGINE_STATE)
     const serializedEngineState: SerializedEngineState = SerializedEngineType(context).AvroType.fromBuffer(buffer)
-
-    const addressMapping = serializedEngineState.addressMapping
-    for (const [address, vertex] of addressMapping.entries()) {
-      const resolvedCell = serializedEngineState.graphState.nodeMap!.get((vertex as UnresolvedCellVertex).id)
-      addressMapping.setCell(address, resolvedCell as CellVertex)
-    }
+    stats.end(StatType.DESERIALIZE_ENGINE_STATE)
 
     return HyperFormula.buildFromSerializedEngineState(serializedEngineState, stats)
   }

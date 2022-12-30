@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import avro, { types } from 'avsc'
 import { SimpleCellAddressType } from './SimpleCellAddressType'
 import { SimpleCellAddress } from '../Cell'

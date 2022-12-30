@@ -1,3 +1,8 @@
+/**
+ * @license
+ * Copyright (c) 2022 Handsoncode. All rights reserved.
+ */
+
 import { ConfigParams } from '../Config'
 import avro, { types } from 'avsc'
 import { ConfigParamsType } from './ConfigParamsType'
@@ -11,7 +16,14 @@ import { ArrayMappingType } from './ArrayMappingType'
 import { NamedExpressionsType } from './NamedExpressionsType'
 import { SerializationContext } from './SerializationContext'
 import { LazilyTransformingAstService } from '../LazilyTransformingAstService'
+
+import { SlowBuffer } from 'buffer'
 import LogicalType = types.LogicalType
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const utils = require('../../node_modules/avsc/lib/utils.js')
+
+const Tap = utils.Tap
 
 export interface SerializedEngineState {
   config: ConfigParams,
@@ -21,7 +33,7 @@ export interface SerializedEngineState {
   sheetMapping: SheetMapping,
   arrayMapping: ArrayMapping,
   namedExpressions: NamedExpressions,
-  lazilyTransformingAstService?: LazilyTransformingAstService
+  lazilyTransformingAstService?: LazilyTransformingAstService,
 }
 
 export function SerializedEngineType(context: SerializationContext) {
@@ -33,7 +45,10 @@ export function SerializedEngineType(context: SerializationContext) {
   const arrayMappingType = context.getType(ArrayMappingType)
   const namedExpressionsType = context.getType(NamedExpressionsType)
 
+  const TAP = new Tap(new SlowBuffer(1024 * 1024 * 500))
+
   return class SerializedEngineType extends LogicalType {
+
     public static AvroType = avro.Type.forSchema({
       type: 'record',
       name: 'SerializedEngine',
@@ -59,6 +74,22 @@ export function SerializedEngineType(context: SerializationContext) {
         'namedExpressions': namedExpressionsType
       }
     })
+
+    toBuffer(val: any): Buffer {
+      TAP.pos = 0;
+
+      (this as any)._write(TAP, val)
+
+      const buf = utils.newBuffer(TAP.pos)
+      if (TAP.isValid()) {
+        TAP.buf.copy(buf, 0, 0, TAP.pos)
+      } else {
+        (this as any)._write(new Tap(buf), val)
+      }
+
+      return buf
+    }
+
 
     protected _fromValue(val: SerializedEngineState): SerializedEngineState {
       val.lazilyTransformingAstService = context.lazilyTransformingAstService
