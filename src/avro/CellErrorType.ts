@@ -4,12 +4,12 @@
  */
 
 import avro, { types } from 'avsc'
-import { CellError, ErrorType } from '../Cell'
-import { SerializationContext } from './SerializationContext'
-import { FormulaVertex } from '../DependencyGraph/FormulaCellVertex'
-import { VertexRefType } from './VertexRefType'
-import { UnresolvedVertex } from './VertexResolverService'
-import { Vertex } from '../DependencyGraph'
+import {CellError, ErrorType} from '../Cell'
+import {SerializationContext} from './SerializationContext'
+import {FormulaVertex} from '../DependencyGraph/FormulaCellVertex'
+import {VertexRefType} from './VertexRefType'
+import {UnresolvedVertex} from './VertexResolverService'
+import {Vertex} from '../DependencyGraph'
 import LogicalType = types.LogicalType
 
 export interface CellErrorFields {

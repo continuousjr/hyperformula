@@ -3,21 +3,21 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { ConfigParams } from '../Config'
+import {ConfigParams} from '../Config'
 import avro, { types } from 'avsc'
-import { ConfigParamsType } from './ConfigParamsType'
-import { AddressMapping, ArrayMapping, RangeMapping, SheetMapping, Vertex } from '../DependencyGraph'
-import { NamedExpressions } from '../NamedExpressions'
-import { SerializedGraphState, SerializedGraphType } from './SerializedGraphType'
-import { AddressMappingType } from './AddressMappingType'
-import { RangeMappingType } from './RangeMappingType'
-import { SheetMappingType } from './SheetMappingType'
-import { ArrayMappingType } from './ArrayMappingType'
-import { NamedExpressionsType } from './NamedExpressionsType'
-import { SerializationContext } from './SerializationContext'
-import { LazilyTransformingAstService } from '../LazilyTransformingAstService'
+import {ConfigParamsType} from './ConfigParamsType'
+import {AddressMapping, ArrayMapping, RangeMapping, SheetMapping, Vertex} from '../DependencyGraph'
+import {NamedExpressions} from '../NamedExpressions'
+import {SerializedGraphState, SerializedGraphType} from './SerializedGraphType'
+import {AddressMappingType} from './AddressMappingType'
+import {RangeMappingType} from './RangeMappingType'
+import {SheetMappingType} from './SheetMappingType'
+import {ArrayMappingType} from './ArrayMappingType'
+import {NamedExpressionsType} from './NamedExpressionsType'
+import {SerializationContext} from './SerializationContext'
+import {LazilyTransformingAstService} from '../LazilyTransformingAstService'
 
-import { SlowBuffer } from 'buffer'
+import {SlowBuffer} from 'buffer'
 import LogicalType = types.LogicalType
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

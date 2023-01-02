@@ -1,4 +1,4 @@
-import { runBasicBenchmark } from './basic-benchmark'
+import {runBasicBenchmark} from './basic-benchmark'
 
 (() => {
   const result = runBasicBenchmark()

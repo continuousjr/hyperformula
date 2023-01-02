@@ -4,10 +4,10 @@
  */
 
 import avro, { types } from 'avsc'
-import { SerializationContext } from './SerializationContext'
-import { ConfigParams } from '../Config'
-import { HyperFormula } from '../HyperFormula'
-import { ChooseAddressMappingPolicyType } from './ChooseAddressMappingPolicyType'
+import {SerializationContext} from './SerializationContext'
+import {ConfigParams} from '../Config'
+import {HyperFormula} from '../HyperFormula'
+import {ChooseAddressMappingPolicyType} from './ChooseAddressMappingPolicyType'
 import LogicalType = types.LogicalType
 
 export function ConfigParamsType(context: SerializationContext) {

@@ -4,9 +4,9 @@
  */
 
 import avro, { types } from 'avsc'
-import { Vertex } from '../DependencyGraph'
-import { SerializationContext } from './SerializationContext'
-import { UnresolvedVertex } from './VertexResolverService'
+import {Vertex} from '../DependencyGraph'
+import {SerializationContext} from './SerializationContext'
+import {UnresolvedVertex} from './VertexResolverService'
 import LogicalType = types.LogicalType
 
 

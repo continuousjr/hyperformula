@@ -4,12 +4,12 @@
  */
 
 import avro, { types } from 'avsc'
-import { CellError } from '../Cell'
-import { SerializationContext } from './SerializationContext'
-import { ArraySize } from '../ArraySize'
-import { CellErrorType } from './CellErrorType'
-import { ArraySizeType } from './ArraySizeType'
-import { ArrayType, ErroredArray } from '../ArrayValue'
+import {CellError} from '../Cell'
+import {SerializationContext} from './SerializationContext'
+import {ArraySize} from '../ArraySize'
+import {CellErrorType} from './CellErrorType'
+import {ArraySizeType} from './ArraySizeType'
+import {ArrayType, ErroredArray} from '../ArrayValue'
 import LogicalType = types.LogicalType
 
 interface ErroredArrayFields {

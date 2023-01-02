@@ -4,9 +4,9 @@
  */
 
 import avro, { types } from 'avsc'
-import { SerializationContext } from './SerializationContext'
-import { RowAddress } from '../parser/RowAddress'
-import { ReferenceType } from '../parser/ColumnAddress'
+import {SerializationContext} from './SerializationContext'
+import {RowAddress} from '../parser/RowAddress'
+import {ReferenceType} from '../parser/ColumnAddress'
 import LogicalType = types.LogicalType
 
 interface RowAddressFields {

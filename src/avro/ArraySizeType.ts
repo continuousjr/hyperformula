@@ -4,8 +4,8 @@
  */
 
 import avro, { types } from 'avsc'
-import { SerializationContext } from './SerializationContext'
-import { ArraySize } from '../ArraySize'
+import {SerializationContext} from './SerializationContext'
+import {ArraySize} from '../ArraySize'
 import LogicalType = types.LogicalType
 
 interface ArraySizeFields {

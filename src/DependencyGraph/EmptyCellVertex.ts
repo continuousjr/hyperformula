@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { SimpleCellAddress } from '../Cell'
-import { EmptyValue, EmptyValueType } from '../interpreter/InterpreterValue'
-import { BaseVertex } from './BaseVertex'
+import {SimpleCellAddress} from '../Cell'
+import {EmptyValue, EmptyValueType} from '../interpreter/InterpreterValue'
+import {BaseVertex} from './BaseVertex'
 
 /**
  * Represents singleton vertex bound to all empty cells

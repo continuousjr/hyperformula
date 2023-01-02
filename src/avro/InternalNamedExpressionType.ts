@@ -4,10 +4,10 @@
  */
 
 import avro, { types } from 'avsc'
-import { SimpleCellAddress } from '../Cell'
-import { InternalNamedExpression, NamedExpressionOptions } from '../NamedExpressions'
-import { SimpleCellAddressType } from './SimpleCellAddressType'
-import { SerializationContext } from './SerializationContext'
+import {SimpleCellAddress} from '../Cell'
+import {InternalNamedExpression, NamedExpressionOptions} from '../NamedExpressions'
+import {SimpleCellAddressType} from './SimpleCellAddressType'
+import {SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface InternalNamedExpressionFields {

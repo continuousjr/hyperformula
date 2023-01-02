@@ -4,10 +4,10 @@
  */
 
 import avro, { types } from 'avsc'
-import { SimpleCellAddressType } from './SimpleCellAddressType'
-import { SimpleCellAddress } from '../Cell'
-import { EmptyCellVertex } from '../DependencyGraph'
-import { SerializationContext } from './SerializationContext'
+import {SimpleCellAddressType} from './SimpleCellAddressType'
+import {SimpleCellAddress} from '../Cell'
+import {EmptyCellVertex} from '../DependencyGraph'
+import {SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface EmptyCellVertexFields {

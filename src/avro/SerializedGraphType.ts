@@ -4,10 +4,10 @@
  */
 
 import avro, { Schema, TypeOptions, types } from 'avsc'
-import { Vertex } from '../DependencyGraph'
-import { VertexType } from './VertexType'
-import { SerializationContext } from './SerializationContext'
-import { VertexRefType } from './VertexRefType'
+import {Vertex} from '../DependencyGraph'
+import {VertexType} from './VertexType'
+import {SerializationContext} from './SerializationContext'
+import {VertexRefType} from './VertexRefType'
 import LogicalType = types.LogicalType
 
 export interface SerializedGraphState<T> {

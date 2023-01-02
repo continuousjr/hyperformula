@@ -4,8 +4,8 @@
  */
 
 import avro, { types } from 'avsc'
-import { SerializationContext } from './SerializationContext'
-import { SimpleCellAddress } from '..'
+import {SerializationContext} from './SerializationContext'
+import {SimpleCellAddress} from '..'
 import LogicalType = types.LogicalType
 
 interface SimpleCellAddressFields {

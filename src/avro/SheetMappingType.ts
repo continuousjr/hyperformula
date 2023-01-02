@@ -4,10 +4,10 @@
  */
 
 import avro, { types } from 'avsc'
-import { SheetMapping } from '../DependencyGraph'
-import { Sheet } from '../DependencyGraph/SheetMapping'
-import { SheetType } from './SheetType'
-import { SerializationContext } from './SerializationContext'
+import {SheetMapping} from '../DependencyGraph'
+import {Sheet} from '../DependencyGraph/SheetMapping'
+import {SheetType} from './SheetType'
+import {SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface SheetMappingFields {

@@ -4,9 +4,9 @@
  */
 
 import avro, { types } from 'avsc'
-import { InternalNamedExpression, NamedExpressions } from '../NamedExpressions'
-import { InternalNamedExpressionType } from './InternalNamedExpressionType'
-import { SerializationContext } from './SerializationContext'
+import {InternalNamedExpression, NamedExpressions} from '../NamedExpressions'
+import {InternalNamedExpressionType} from './InternalNamedExpressionType'
+import {SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface NamedExpressionWithScope {

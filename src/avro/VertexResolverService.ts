@@ -3,7 +3,7 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { Vertex } from '../DependencyGraph'
+import {Vertex} from '../DependencyGraph'
 
 type WithId = Vertex & {
   _vid: number,  // Unique vertex id for a serialization run

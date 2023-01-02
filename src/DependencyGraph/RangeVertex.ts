@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { AbsoluteCellRange } from '../AbsoluteCellRange'
-import { SimpleCellAddress } from '../Cell'
-import { CriterionLambda } from '../interpreter/Criterion'
-import { BaseVertex } from './BaseVertex'
+import {AbsoluteCellRange} from '../AbsoluteCellRange'
+import {SimpleCellAddress} from '../Cell'
+import {CriterionLambda} from '../interpreter/Criterion'
+import {BaseVertex} from './BaseVertex'
 
 /**
  * Represents cache structure for one criterion

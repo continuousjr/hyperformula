@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { ArraySize } from './ArraySize'
-import { CellError } from './Cell'
-import { EmptyValue, InternalScalarValue, InterpreterValue } from './interpreter/InterpreterValue'
+import {ArraySize} from './ArraySize'
+import {CellError} from './Cell'
+import {EmptyValue, InternalScalarValue, InterpreterValue} from './interpreter/InterpreterValue'
 import {SimpleRangeValue} from './SimpleRangeValue'
 
 export enum ArrayType {

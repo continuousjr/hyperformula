@@ -4,9 +4,9 @@
  */
 
 import avro, { types } from 'avsc'
-import { CellAddress } from '../parser'
-import { CellReferenceType } from '../parser/CellAddress'
-import { SerializationContext } from './SerializationContext'
+import {CellAddress} from '../parser'
+import {CellReferenceType} from '../parser/CellAddress'
+import {SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface CellAddressFields {

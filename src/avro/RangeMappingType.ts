@@ -4,9 +4,9 @@
  */
 
 import avro, { types } from 'avsc'
-import { RangeMapping, RangeVertex } from '../DependencyGraph'
-import { SerializationContext } from './SerializationContext'
-import { VertexRefType } from './VertexRefType'
+import {RangeMapping, RangeVertex} from '../DependencyGraph'
+import {SerializationContext} from './SerializationContext'
+import {VertexRefType} from './VertexRefType'
 import LogicalType = types.LogicalType
 
 interface RangeMappingEntry {

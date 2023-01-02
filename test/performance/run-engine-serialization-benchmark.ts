@@ -1,4 +1,4 @@
-import { runEngineSerializationBenchmark } from './engine-serialization-benchmark'
+import {runEngineSerializationBenchmark} from './engine-serialization-benchmark'
 
 (() => {
   const result = runEngineSerializationBenchmark()

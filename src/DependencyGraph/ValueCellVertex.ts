@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { CellError } from '../Cell'
-import { RawCellContent } from '../CellContentParser'
-import { ExtendedNumber } from '../interpreter/InterpreterValue'
-import { BaseVertex } from './BaseVertex'
+import {CellError} from '../Cell'
+import {RawCellContent} from '../CellContentParser'
+import {ExtendedNumber} from '../interpreter/InterpreterValue'
+import {BaseVertex} from './BaseVertex'
 
 export type ValueCellVertexValue = ExtendedNumber | boolean | string | CellError
 

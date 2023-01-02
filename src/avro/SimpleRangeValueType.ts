@@ -4,7 +4,7 @@
  */
 
 import avro, { types } from 'avsc'
-import { SerializationContext } from './SerializationContext'
+import {SerializationContext} from './SerializationContext'
 import {
   InternalScalarValueType,
   PostserializedWrappedInterpreterValue,
@@ -12,8 +12,8 @@ import {
   wrapInterpreterValue,
   WrappedInterpreterValue
 } from './InterpreterValueType'
-import { EmptyValue, InternalScalarValue } from '../interpreter/InterpreterValue'
-import { SimpleRangeValue } from '../interpreter/SimpleRangeValue'
+import {EmptyValue, InternalScalarValue} from '../interpreter/InterpreterValue'
+import {SimpleRangeValue} from '../SimpleRangeValue'
 import LogicalType = types.LogicalType
 
 export interface SimpleRangeValueFields {

@@ -3,7 +3,7 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { SerializationContext } from './SerializationContext'
+import {SerializationContext} from './SerializationContext'
 import avro, { types } from 'avsc'
 import {
   CurrencyNumber,

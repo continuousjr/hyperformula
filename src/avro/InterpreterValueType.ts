@@ -5,15 +5,15 @@
 
 /* eslint-disable no-extra-boolean-cast */
 import avro from 'avsc'
-import { CellError } from '../Cell'
-import { CellErrorType } from './CellErrorType'
-import { SerializationContext } from './SerializationContext'
-import { RichNumberType } from './RichNumberType'
-import { InterpreterValue, RichNumber } from '../interpreter/InterpreterValue'
-import { Maybe } from '../Maybe'
-import { ValueCellVertexValue } from '../DependencyGraph/ValueCellVertex'
-import { SimpleRangeValueType } from './SimpleRangeValueType'
-import { SimpleRangeValue } from '../interpreter/SimpleRangeValue'
+import {CellError} from '../Cell'
+import {CellErrorType} from './CellErrorType'
+import {SerializationContext} from './SerializationContext'
+import {RichNumberType} from './RichNumberType'
+import {InterpreterValue, RichNumber} from '../interpreter/InterpreterValue'
+import {Maybe} from '../Maybe'
+import {ValueCellVertexValue} from '../DependencyGraph/ValueCellVertex'
+import {SimpleRangeValueType} from './SimpleRangeValueType'
+import {SimpleRangeValue} from '../SimpleRangeValue'
 
 
 type MaybeInterpreterValue = Maybe<InterpreterValue | ValueCellVertexValue> | null

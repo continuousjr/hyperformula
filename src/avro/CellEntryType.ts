@@ -4,9 +4,9 @@
  */
 
 import avro from 'avsc'
-import { SerializationContext } from './SerializationContext'
-import { Vertex } from '../DependencyGraph'
-import { VertexRefType } from './VertexRefType'
+import {SerializationContext} from './SerializationContext'
+import {Vertex} from '../DependencyGraph'
+import {VertexRefType} from './VertexRefType'
 
 export interface CellEntry {
   row: number,

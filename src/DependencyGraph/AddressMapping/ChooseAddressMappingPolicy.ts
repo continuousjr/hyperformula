@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { DenseStrategy } from './DenseStrategy'
-import { AddressMappingStrategyConstructor } from './IAddressMappingStrategy'
-import { SparseStrategy } from './SparseStrategy'
+import {DenseStrategy} from './DenseStrategy'
+import {AddressMappingStrategyConstructor} from './IAddressMappingStrategy'
+import {SparseStrategy} from './SparseStrategy'
 
 export interface ChooseAddressMapping {
   call(fill: number): AddressMappingStrategyConstructor,

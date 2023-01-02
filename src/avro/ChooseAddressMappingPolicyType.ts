@@ -10,7 +10,7 @@ import {
   ChooseAddressMapping,
   DenseSparseChooseBasedOnThreshold
 } from '../DependencyGraph/AddressMapping/ChooseAddressMappingPolicy'
-import { SerializationContext } from './SerializationContext'
+import {SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface ChooseAddressMappingPolicyFields {

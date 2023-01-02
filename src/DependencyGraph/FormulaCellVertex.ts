@@ -3,18 +3,18 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { AbsoluteCellRange } from '../AbsoluteCellRange'
-import { ArraySize } from '../ArraySize'
-import { ArrayValue, ErroredArray, IArray, NotComputedArray } from '../ArrayValue'
-import { CellError, equalSimpleCellAddress, ErrorType, SimpleCellAddress } from '../Cell'
-import { RawCellContent } from '../CellContentParser'
-import { ErrorMessage } from '../error-message'
-import { EmptyValue, getRawValue, InternalScalarValue, InterpreterValue } from '../interpreter/InterpreterValue'
-import { LazilyTransformingAstService } from '../LazilyTransformingAstService'
-import { Maybe } from '../Maybe'
-import { Ast } from '../parser'
-import { ColumnsSpan, RowsSpan } from '../Span'
-import { BaseVertex } from './BaseVertex'
+import {AbsoluteCellRange} from '../AbsoluteCellRange'
+import {ArraySize} from '../ArraySize'
+import {ArrayValue, ErroredArray, IArray, NotComputedArray} from '../ArrayValue'
+import {CellError, equalSimpleCellAddress, ErrorType, SimpleCellAddress} from '../Cell'
+import {RawCellContent} from '../CellContentParser'
+import {ErrorMessage} from '../error-message'
+import {EmptyValue, getRawValue, InternalScalarValue, InterpreterValue} from '../interpreter/InterpreterValue'
+import {LazilyTransformingAstService} from '../LazilyTransformingAstService'
+import {Maybe} from '../Maybe'
+import {Ast} from '../parser'
+import {ColumnsSpan, RowsSpan} from '../Span'
+import {BaseVertex} from './BaseVertex'
 
 export abstract class FormulaVertex extends BaseVertex {
   protected constructor(

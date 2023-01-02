@@ -4,15 +4,15 @@
  */
 
 import avro, { types } from 'avsc'
-import { Vertex } from '../DependencyGraph'
-import { ParsingErrorVertexType } from './ParsingErrorVertexType'
-import { EmptyCellVertexType } from './EmptyCellVertexType'
-import { ValueCellVertexType } from './ValueCellVertexType'
-import { FormulaCellVertexType } from './FormulaCellVertexType'
-import { SerializationContext } from './SerializationContext'
-import { BaseVertex } from '../DependencyGraph/BaseVertex'
-import { RangeVertexType } from './RangeVertexType'
-import { ArrayVertexType } from './ArrayVertexType'
+import {Vertex} from '../DependencyGraph'
+import {ParsingErrorVertexType} from './ParsingErrorVertexType'
+import {EmptyCellVertexType} from './EmptyCellVertexType'
+import {ValueCellVertexType} from './ValueCellVertexType'
+import {FormulaCellVertexType} from './FormulaCellVertexType'
+import {SerializationContext} from './SerializationContext'
+import {BaseVertex} from '../DependencyGraph/BaseVertex'
+import {RangeVertexType} from './RangeVertexType'
+import {ArrayVertexType} from './ArrayVertexType'
 import LogicalType = types.LogicalType
 
 type WrappedVertex = { [key: string]: Vertex } & {

@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { ArrayVertex, CellVertex, FormulaCellVertex, ParsingErrorVertex, ValueCellVertex } from './DependencyGraph'
-import { FormulaVertex } from './DependencyGraph/FormulaCellVertex'
-import { ErrorMessage } from './error-message'
+import {ArrayVertex, CellVertex, FormulaCellVertex, ParsingErrorVertex, ValueCellVertex} from './DependencyGraph'
+import {FormulaVertex} from './DependencyGraph/FormulaCellVertex'
+import {ErrorMessage} from './error-message'
 import {
   EmptyValue,
   getFormatOfExtendedNumber,
@@ -15,9 +15,9 @@ import {
   NumberType,
 } from './interpreter/InterpreterValue'
 import {SimpleRangeValue} from './SimpleRangeValue'
-import { Maybe } from './Maybe'
-import { CellAddress } from './parser'
-import { AddressWithSheet } from './parser/Address'
+import {Maybe} from './Maybe'
+import {CellAddress} from './parser'
+import {AddressWithSheet} from './parser/Address'
 
 /**
  * Possible errors returned by our interpreter.

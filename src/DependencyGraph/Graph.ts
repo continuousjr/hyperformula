@@ -3,7 +3,7 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { SerializedGraphState } from '../avro/SerializedGraphType'
+import {SerializedGraphState} from '../avro/SerializedGraphType'
 
 export type DependencyQuery<T> = (vertex: T) => T[]
 

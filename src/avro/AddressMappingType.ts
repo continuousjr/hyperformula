@@ -4,12 +4,12 @@
  */
 
 import avro, { types } from 'avsc'
-import { AddressMapping, CellVertex, DenseStrategy, SparseStrategy } from '../DependencyGraph'
-import { ChooseAddressMapping } from '../DependencyGraph/AddressMapping/ChooseAddressMappingPolicy'
-import { ChooseAddressMappingPolicyType } from './ChooseAddressMappingPolicyType'
-import { AddressMappingEntry, AddressMappingEntryType } from './AddressMappingEntryType'
-import { CellEntry } from './CellEntryType'
-import { SerializationContext } from './SerializationContext'
+import {AddressMapping, CellVertex, DenseStrategy, SparseStrategy} from '../DependencyGraph'
+import {ChooseAddressMapping} from '../DependencyGraph/AddressMapping/ChooseAddressMappingPolicy'
+import {ChooseAddressMappingPolicyType} from './ChooseAddressMappingPolicyType'
+import {AddressMappingEntry, AddressMappingEntryType} from './AddressMappingEntryType'
+import {CellEntry} from './CellEntryType'
+import {SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface AddressMappingFields {

@@ -3,16 +3,16 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { AbsoluteCellRange, SimpleCellRange, simpleCellRange } from '../AbsoluteCellRange'
-import { absolutizeDependencies } from '../absolutizeDependencies'
-import { ArraySize } from '../ArraySize'
-import { CellError, ErrorType, isSimpleCellAddress, simpleCellAddress, SimpleCellAddress } from '../Cell'
-import { RawCellContent } from '../CellContentParser'
-import { CellDependency } from '../CellDependency'
-import { Config } from '../Config'
-import { ContentChanges } from '../ContentChanges'
-import { ErrorMessage } from '../error-message'
-import { FunctionRegistry } from '../interpreter/FunctionRegistry'
+import {AbsoluteCellRange, SimpleCellRange, simpleCellRange} from '../AbsoluteCellRange'
+import {absolutizeDependencies} from '../absolutizeDependencies'
+import {ArraySize} from '../ArraySize'
+import {CellError, ErrorType, isSimpleCellAddress, simpleCellAddress, SimpleCellAddress} from '../Cell'
+import {RawCellContent} from '../CellContentParser'
+import {CellDependency} from '../CellDependency'
+import {Config} from '../Config'
+import {ContentChanges} from '../ContentChanges'
+import {ErrorMessage} from '../error-message'
+import {FunctionRegistry} from '../interpreter/FunctionRegistry'
 import {
   EmptyValue,
   getRawValue,
@@ -21,12 +21,12 @@ import {
   RawScalarValue
 } from '../interpreter/InterpreterValue'
 import {SimpleRangeValue} from '../SimpleRangeValue'
-import { LazilyTransformingAstService } from '../LazilyTransformingAstService'
-import { Maybe } from '../Maybe'
-import { NamedExpressions } from '../NamedExpressions'
-import { Ast, collectDependencies, NamedExpressionDependency } from '../parser'
-import { ColumnsSpan, RowsSpan, Span } from '../Span'
-import { Statistics, StatType } from '../statistics'
+import {LazilyTransformingAstService} from '../LazilyTransformingAstService'
+import {Maybe} from '../Maybe'
+import {NamedExpressions} from '../NamedExpressions'
+import {Ast, collectDependencies, NamedExpressionDependency} from '../parser'
+import {ColumnsSpan, RowsSpan, Span} from '../Span'
+import {Statistics, StatType} from '../statistics'
 import {
   ArrayVertex,
   CellVertex,
@@ -37,15 +37,15 @@ import {
   ValueCellVertex,
   Vertex,
 } from './'
-import { AddressMapping } from './AddressMapping/AddressMapping'
-import { ArrayMapping } from './ArrayMapping'
-import { collectAddressesDependentToRange } from './collectAddressesDependentToRange'
-import { FormulaVertex } from './FormulaCellVertex'
-import { Graph, TopSortResult } from './Graph'
-import { RangeMapping } from './RangeMapping'
-import { SheetMapping } from './SheetMapping'
-import { RawAndParsedValue } from './ValueCellVertex'
-import { SerializedGraphState } from '../avro/SerializedGraphType'
+import {AddressMapping} from './AddressMapping/AddressMapping'
+import {ArrayMapping} from './ArrayMapping'
+import {collectAddressesDependentToRange} from './collectAddressesDependentToRange'
+import {FormulaVertex} from './FormulaCellVertex'
+import {Graph, TopSortResult} from './Graph'
+import {RangeMapping} from './RangeMapping'
+import {SheetMapping} from './SheetMapping'
+import {RawAndParsedValue} from './ValueCellVertex'
+import {SerializedGraphState} from '../avro/SerializedGraphType'
 
 export class DependencyGraph {
   public readonly graph: Graph<Vertex>

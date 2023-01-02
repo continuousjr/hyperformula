@@ -4,8 +4,8 @@
  */
 
 import avro, { types } from 'avsc'
-import { SerializationContext } from './SerializationContext'
-import { ArrayType, ArrayValue } from '../ArrayValue'
+import {SerializationContext} from './SerializationContext'
+import {ArrayType, ArrayValue} from '../ArrayValue'
 import {
   InterpreterValueType,
   PostserializedWrappedInterpreterValue,
@@ -13,7 +13,7 @@ import {
   wrapInterpreterValue,
   WrappedInterpreterValue
 } from './InterpreterValueType'
-import { EmptyValue, InternalScalarValue, InterpreterValue } from '../interpreter/InterpreterValue'
+import {EmptyValue, InternalScalarValue, InterpreterValue} from '../interpreter/InterpreterValue'
 import LogicalType = types.LogicalType
 
 interface ArrayValueFields {

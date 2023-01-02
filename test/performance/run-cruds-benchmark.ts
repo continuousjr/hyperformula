@@ -1,4 +1,4 @@
-import { runCrudsBenchmark } from './cruds-benchmark'
+import {runCrudsBenchmark} from './cruds-benchmark'
 
 (() => {
   const result = runCrudsBenchmark()

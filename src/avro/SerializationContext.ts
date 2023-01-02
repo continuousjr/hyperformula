@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { LazilyTransformingAstService } from '../LazilyTransformingAstService'
-import { Schema, Type, TypeOptions } from 'avsc'
-import { TranslationPackage } from '../i18n'
-import { VertexResolverService } from './VertexResolverService'
+import {LazilyTransformingAstService} from '../LazilyTransformingAstService'
+import {Schema, Type, TypeOptions} from 'avsc'
+import {TranslationPackage} from '../i18n'
+import {VertexResolverService} from './VertexResolverService'
 
 export interface SimpleAvroType<T> {
   new(): T,

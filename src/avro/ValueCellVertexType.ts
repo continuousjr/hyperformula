@@ -4,9 +4,9 @@
  */
 
 import avro, { types } from 'avsc'
-import { ValueCellVertex } from '../DependencyGraph'
-import { ValueCellVertexValue } from '../DependencyGraph/ValueCellVertex'
-import { SerializationContext } from './SerializationContext'
+import {ValueCellVertex} from '../DependencyGraph'
+import {ValueCellVertexValue} from '../DependencyGraph/ValueCellVertex'
+import {SerializationContext} from './SerializationContext'
 import {
   InterpreterValueType,
   PostserializedWrappedInterpreterValue,
@@ -14,9 +14,9 @@ import {
   wrapInterpreterValue,
   WrappedInterpreterValue
 } from './InterpreterValueType'
-import { RawCellContent } from '../CellContentParser'
-import { RichNumberType } from './RichNumberType'
-import { CellErrorType } from './CellErrorType'
+import {RawCellContent} from '../CellContentParser'
+import {RichNumberType} from './RichNumberType'
+import {CellErrorType} from './CellErrorType'
 import LogicalType = types.LogicalType
 
 type ValueCellVertexFields = {

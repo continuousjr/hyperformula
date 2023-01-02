@@ -3,13 +3,13 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { HyperFormula } from '../HyperFormula'
-import { SerializedEngineState, SerializedEngineType } from './SerializedEngineState'
-import { Statistics, StatType } from '../statistics'
-import { SerializedGraphState } from './SerializedGraphType'
-import { SerializationContext } from './SerializationContext'
-import { LazilyTransformingAstService } from '../LazilyTransformingAstService'
-import { Vertex } from '../DependencyGraph'
+import {HyperFormula} from '../HyperFormula'
+import {SerializedEngineState, SerializedEngineType} from './SerializedEngineState'
+import {Statistics, StatType} from '../statistics'
+import {SerializedGraphState} from './SerializedGraphType'
+import {SerializationContext} from './SerializationContext'
+import {LazilyTransformingAstService} from '../LazilyTransformingAstService'
+import {Vertex} from '../DependencyGraph'
 
 export class AvroSerializer {
   serialize(engine: HyperFormula): Buffer {

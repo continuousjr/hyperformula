@@ -4,8 +4,8 @@
  */
 
 import avro, { types } from 'avsc'
-import { ArrayMapping } from '../DependencyGraph'
-import { SerializationContext } from './SerializationContext'
+import {ArrayMapping} from '../DependencyGraph'
+import {SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface ArrayMappingFields {

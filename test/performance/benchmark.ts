@@ -1,5 +1,5 @@
-import { CellValue, ConfigParams, HyperFormula, Sheet } from '../../src'
-import { Maybe } from '../../src/Maybe'
+import {CellValue, ConfigParams, HyperFormula, Sheet} from '../../src'
+import {Maybe} from '../../src/Maybe'
 import {
   average,
   EnrichedStatType,
@@ -31,11 +31,6 @@ export const defaultEngineConfig: Partial<ConfigParams> = {
 export interface ExpectedValue {
   address: string,
   value: CellValue,
-}
-
-export interface EngineAndExpectedValues {
-  engine: HyperFormula,
-  expectedValues: Record<string, ExpectedValue[]>,
 }
 
 export interface BenchmarkResult {

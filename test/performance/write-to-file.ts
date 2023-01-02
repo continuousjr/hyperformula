@@ -1,6 +1,6 @@
-import { runBasicBenchmark } from './basic-benchmark'
-import { runCrudsBenchmark } from './cruds-benchmark'
-import { runEngineSerializationBenchmark } from './engine-serialization-benchmark'
+import {runBasicBenchmark} from './basic-benchmark'
+import {runCrudsBenchmark} from './cruds-benchmark'
+import {runEngineSerializationBenchmark} from './engine-serialization-benchmark'
 import fs = require('fs')
 
 (() => {

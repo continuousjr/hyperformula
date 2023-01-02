@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import { CellError } from '../Cell'
-import { ParsingError } from '../parser/Ast'
-import { BaseVertex } from './BaseVertex'
+import {CellError} from '../Cell'
+import {ParsingError} from '../parser/Ast'
+import {BaseVertex} from './BaseVertex'
 
 export class ParsingErrorVertex extends BaseVertex {
   public static TYPE = 'PARSING_ERROR_VERTEX'

@@ -4,8 +4,8 @@
  */
 
 import avro from 'avsc'
-import { CellEntry, CellEntryType } from './CellEntryType'
-import { SerializationContext } from './SerializationContext'
+import {CellEntry, CellEntryType} from './CellEntryType'
+import {SerializationContext} from './SerializationContext'
 
 export interface AddressMappingEntry {
   sheetId: number,

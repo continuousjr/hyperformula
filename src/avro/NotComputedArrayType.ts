@@ -4,10 +4,10 @@
  */
 
 import avro, { types } from 'avsc'
-import { SerializationContext } from './SerializationContext'
-import { ArraySize } from '../ArraySize'
-import { ArraySizeType } from './ArraySizeType'
-import { ArrayType, NotComputedArray } from '../ArrayValue'
+import {SerializationContext} from './SerializationContext'
+import {ArraySize} from '../ArraySize'
+import {ArraySizeType} from './ArraySizeType'
+import {ArrayType, NotComputedArray} from '../ArrayValue'
 import LogicalType = types.LogicalType
 
 interface NotComputedArrayFields {

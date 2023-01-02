@@ -4,11 +4,11 @@
  */
 
 import avro, { types } from 'avsc'
-import { SimpleCellAddressType } from './SimpleCellAddressType'
-import { SimpleCellAddress } from '../Cell'
-import { SerializationContext } from './SerializationContext'
-import { RangeVertex } from '../DependencyGraph'
-import { AbsoluteCellRange } from '../AbsoluteCellRange'
+import {SimpleCellAddressType} from './SimpleCellAddressType'
+import {SimpleCellAddress} from '../Cell'
+import {SerializationContext} from './SerializationContext'
+import {RangeVertex} from '../DependencyGraph'
+import {AbsoluteCellRange} from '../AbsoluteCellRange'
 import LogicalType = types.LogicalType
 
 interface RangeVertexFields {

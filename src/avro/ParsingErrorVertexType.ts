@@ -4,9 +4,9 @@
  */
 
 import avro, { types } from 'avsc'
-import { ParsingError, ParsingErrorType } from '../parser/Ast'
-import { ParsingErrorVertex } from '../DependencyGraph'
-import { SerializationContext } from './SerializationContext'
+import {ParsingError, ParsingErrorType} from '../parser/Ast'
+import {ParsingErrorVertex} from '../DependencyGraph'
+import {SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface ParsingErrorFields {
