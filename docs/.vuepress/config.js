@@ -1,5 +1,6 @@
 const highlight = require('./highlight');
 const regexPlugin = require('markdown-it-regex').default;
+const footnotePlugin = require('markdown-it-footnote');
 const searchBoxPlugin = require('./plugins/search-box');
 const HyperFormula = require('../../dist/hyperformula.full');
 const fs = require('fs');
@@ -74,6 +75,7 @@ module.exports = {
         regex: /(process\.env\.HT_RELEASE_DATE as string)/,
         replace: () => `'${HyperFormula.releaseDate}'`
       })
+      md.use(footnotePlugin)
     }
   },
   // TODO: It doesn't work. It's seems that this option is bugged. Documentation says that this option is configurable,
@@ -203,6 +205,7 @@ module.exports = {
           title: 'Internationalization',
           collapsable: false,
           children: [
+            ['/guide/i18n-features', 'Internationalization features'],
             ['/guide/localizing-functions', 'Localizing functions'],
             ['/guide/date-and-time-handling', 'Date and time handling'],
           ]
@@ -226,6 +229,7 @@ module.exports = {
             ['/guide/custom-functions', 'Custom functions'],
             ['/guide/performance', 'Performance'],
             ['/guide/known-limitations', 'Known limitations'],
+            ['/guide/file-import', 'File import'],
           ]
         },
         {

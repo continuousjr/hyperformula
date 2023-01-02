@@ -6,7 +6,7 @@
 import { ArraySize } from './ArraySize'
 import { CellError } from './Cell'
 import { EmptyValue, InternalScalarValue, InterpreterValue } from './interpreter/InterpreterValue'
-import { SimpleRangeValue } from './interpreter/SimpleRangeValue'
+import {SimpleRangeValue} from './SimpleRangeValue'
 
 export enum ArrayType {
   NOT_COMPUTED = 'NOT_COMPUTED',

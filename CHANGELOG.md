@@ -6,11 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2022-12-22
+
 ### Added
-- Added a new mode to the MATCH function that searches in ranges ordered descending. [#1063](https://github.com/handsontable/hyperformula/issues/1063)
+- Exported the `ArraySize` class as a public API. [#843](https://github.com/handsontable/hyperformula/issues/843)
+- Renamed an internal interface from `ArgumentTypes` to `FunctionArgumentType`, and exported it as a public API. [#1108](https://github.com/handsontable/hyperformula/pull/1108)
+- Exported `ImplementedFunctions` and `FunctionMetadata` as public APIs. [#1108](https://github.com/handsontable/hyperformula/pull/1108)
+
+## [2.2.0] - 2022-11-17
+
+### Added
+- Added an American English (`enUS`) language pack. It's a convenience alias: it contains the same translations as the existing British English (`enGB`) language pack. [#1025](https://github.com/handsontable/hyperformula/issues/1025)
 
 ### Fixed
-- Fixed functions VLOOKUP and HLOOKUP to handle duplicates according to the specification. [#1072](https://github.com/handsontable/hyperformula/issues/1072)
+- Fixed functions VLOOKUP and HLOOKUP to handle duplicates in the way specified by the [OpenDocument](https://docs.oasis-open.org/office/OpenDocument/v1.3/os/part4-formula/OpenDocument-v1.3-os-part4-formula.html#HLOOKUP) standard. [#1072](https://github.com/handsontable/hyperformula/issues/1072)
+- Fixed the MATCH function to handle descending ranges in the way specified by the [OpenDocument](https://docs.oasis-open.org/office/OpenDocument/v1.3/os/part4-formula/OpenDocument-v1.3-os-part4-formula.html#MATCH) standard. [#1063](https://github.com/handsontable/hyperformula/issues/1063)
 
 ## [2.1.0] - 2022-09-08
 
