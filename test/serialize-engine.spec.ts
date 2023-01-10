@@ -642,7 +642,7 @@ describe('Saving and restoring engine state', () => {
       expect(restored).toEqual(addr)
     })
 
-    function serializeAndRestoreItem<T, I>(type: AvroTypeCreator<T>, item: I, ...vertices: Vertex[]): I {
+    function serializeAndRestoreItem<I>(type: AvroTypeCreator, item: I, ...vertices: Vertex[]): I {
       const outEngine = HyperFormula.buildEmpty()
       const outContext = new SerializationContext(outEngine.lazilyTransformingAstService)
       vertices.forEach(v => {

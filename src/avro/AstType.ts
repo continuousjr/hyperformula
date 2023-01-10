@@ -3,11 +3,11 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { schema, types } from 'avsc'
+import avro, {schema, types} from 'avsc'
 import {CellAddressType} from './CellAddressType'
 import {CellErrorType} from './CellErrorType'
 import {Ast, AstNodeType} from '../parser'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {ColumnAddressType} from './ColumnAddressType'
 import {RowAddressType} from './RowAddressType'
 import LogicalType = types.LogicalType
@@ -27,11 +27,11 @@ const binaryOpSchema = (type: string): RecordType => ({
   ]
 })
 
-export function AstType(context: SerializationContext) {
-  const cellErrorType = CellErrorType(context)
-  const cellAddressType = CellAddressType(context)
-  const columnAddressType = ColumnAddressType(context)
-  const rowAddressType = RowAddressType(context)
+export function AstType(context: SerializationContext): LogicalAvroType {
+  const cellErrorType = context.getLogicalType(CellErrorType)
+  const cellAddressType = context.getLogicalType(CellAddressType)
+  const columnAddressType = context.getLogicalType(ColumnAddressType)
+  const rowAddressType = context.getLogicalType(RowAddressType)
 
   return class AstType extends LogicalType {
     public static AvroType = avro.Type.forSchema({

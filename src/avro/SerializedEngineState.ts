@@ -4,7 +4,7 @@
  */
 
 import {ConfigParams} from '../Config'
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {ConfigParamsType} from './ConfigParamsType'
 import {AddressMapping, ArrayMapping, RangeMapping, SheetMapping, Vertex} from '../DependencyGraph'
 import {NamedExpressions} from '../NamedExpressions'
@@ -14,14 +14,14 @@ import {RangeMappingType} from './RangeMappingType'
 import {SheetMappingType} from './SheetMappingType'
 import {ArrayMappingType} from './ArrayMappingType'
 import {NamedExpressionsType} from './NamedExpressionsType'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {LazilyTransformingAstService} from '../LazilyTransformingAstService'
 
 import {SlowBuffer} from 'buffer'
 import LogicalType = types.LogicalType
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const utils = require('../../node_modules/avsc/lib/utils.js')
+const utils = require('avsc/lib/utils.js')
 
 const Tap = utils.Tap
 
@@ -36,14 +36,14 @@ export interface SerializedEngineState {
   lazilyTransformingAstService?: LazilyTransformingAstService,
 }
 
-export function SerializedEngineType(context: SerializationContext) {
-  const configParamsType = context.getType(ConfigParamsType)
-  const serializedGraphType = context.getType(SerializedGraphType)
-  const addressMappingType = context.getType(AddressMappingType)
-  const rangeMappingType = context.getType(RangeMappingType)
-  const sheetMappingType = context.getType(SheetMappingType)
-  const arrayMappingType = context.getType(ArrayMappingType)
-  const namedExpressionsType = context.getType(NamedExpressionsType)
+export function SerializedEngineType(context: SerializationContext): LogicalAvroType {
+  const configParamsType = context.getLogicalType(ConfigParamsType)
+  const serializedGraphType = context.getLogicalType(SerializedGraphType)
+  const addressMappingType = context.getLogicalType(AddressMappingType)
+  const rangeMappingType = context.getLogicalType(RangeMappingType)
+  const sheetMappingType = context.getLogicalType(SheetMappingType)
+  const arrayMappingType = context.getLogicalType(ArrayMappingType)
+  const namedExpressionsType = context.getLogicalType(NamedExpressionsType)
 
   const TAP = new Tap(new SlowBuffer(1024 * 1024 * 500))
 

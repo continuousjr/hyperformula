@@ -3,11 +3,11 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {SimpleCellAddressType} from './SimpleCellAddressType'
 import {SimpleCellAddress} from '../Cell'
 import {Ast} from '../parser'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {AstType} from './AstType'
 import {ArrayVertex} from '../DependencyGraph'
 import {CellErrorType} from './CellErrorType'
@@ -34,15 +34,15 @@ interface ArrayVertexFields {
   array: WrappedArray,
 }
 
-export function ArrayVertexType(context: SerializationContext) {
+export function ArrayVertexType(context: SerializationContext): LogicalAvroType {
   const TEMP_INITIAL_ARRAY_SIZE = new ArraySize(1, 1, false)
 
-  const astType = context.getType(AstType)
-  const cellErrorType = context.getType(CellErrorType)
-  const arrayValueType = context.getType(ArrayValueType)
-  const notComputedArrayType = context.getType(NotComputedArrayType)
-  const erroredArrayType = context.getType(ErroredArrayType)
-  const simpleCellAddressType = context.getType(SimpleCellAddressType)
+  const astType = context.getLogicalType(AstType)
+  const cellErrorType = context.getLogicalType(CellErrorType)
+  const arrayValueType = context.getLogicalType(ArrayValueType)
+  const notComputedArrayType = context.getLogicalType(NotComputedArrayType)
+  const erroredArrayType = context.getLogicalType(ErroredArrayType)
+  const simpleCellAddressType = context.getLogicalType(SimpleCellAddressType)
 
   return class ArrayVertexType extends LogicalType {
     public static AvroType = avro.Type.forSchema({

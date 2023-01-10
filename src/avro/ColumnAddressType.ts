@@ -3,8 +3,8 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
-import {SerializationContext} from './SerializationContext'
+import avro, {types} from 'avsc'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {ColumnAddress, ReferenceType} from '../parser/ColumnAddress'
 import LogicalType = types.LogicalType
 
@@ -14,7 +14,7 @@ interface ColumnAddressFields {
   sheet: number | null,
 }
 
-export function ColumnAddressType(context: SerializationContext) {
+export function ColumnAddressType(context: SerializationContext): LogicalAvroType {
   return class ColumnAddressType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
         type: 'record',

@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {ValueCellVertex} from '../DependencyGraph'
 import {ValueCellVertexValue} from '../DependencyGraph/ValueCellVertex'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {
   InterpreterValueType,
   PostserializedWrappedInterpreterValue,
@@ -25,10 +25,10 @@ type ValueCellVertexFields = {
   rawValue: RawCellContent,
 }
 
-export function ValueCellVertexType(context: SerializationContext) {
+export function ValueCellVertexType(context: SerializationContext): LogicalAvroType {
   const interpreterValueType = context.getType(InterpreterValueType)
-  const cellErrorType = context.getType(CellErrorType)
-  const richNumberType = context.getType(RichNumberType)
+  const cellErrorType = context.getLogicalType(CellErrorType)
+  const richNumberType = context.getLogicalType(RichNumberType)
 
   return class ValueCellVertexType extends LogicalType {
     public static AvroType = avro.Type.forSchema({

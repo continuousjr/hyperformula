@@ -3,8 +3,8 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
-import {SerializationContext} from './SerializationContext'
+import avro, {types} from 'avsc'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {ArraySize} from '../ArraySize'
 import {ArraySizeType} from './ArraySizeType'
 import {ArrayType, NotComputedArray} from '../ArrayValue'
@@ -14,8 +14,8 @@ interface NotComputedArrayFields {
   size: ArraySize,
 }
 
-export function NotComputedArrayType(context: SerializationContext) {
-  const arraySizeType = context.getType(ArraySizeType)
+export function NotComputedArrayType(context: SerializationContext): LogicalAvroType {
+  const arraySizeType = context.getLogicalType(ArraySizeType)
 
   return class NotComputedArrayType extends LogicalType {
     public static AvroType = avro.Type.forSchema({

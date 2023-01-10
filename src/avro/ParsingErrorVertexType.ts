@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {ParsingError, ParsingErrorType} from '../parser/Ast'
 import {ParsingErrorVertex} from '../DependencyGraph'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface ParsingErrorFields {
@@ -28,7 +28,7 @@ export interface ParsingErrorVertexFields {
   rawInput: string,
 }
 
-export function ParsingErrorVertexType(_context: SerializationContext) {
+export function ParsingErrorVertexType(_context: SerializationContext): LogicalAvroType {
   return class ParsingErrorVertexType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

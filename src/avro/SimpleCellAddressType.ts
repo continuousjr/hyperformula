@@ -3,8 +3,8 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
-import {SerializationContext} from './SerializationContext'
+import avro, {types} from 'avsc'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {SimpleCellAddress} from '..'
 import LogicalType = types.LogicalType
 
@@ -14,7 +14,7 @@ interface SimpleCellAddressFields {
   sheet: number,
 }
 
-export function SimpleCellAddressType(_context: SerializationContext) {
+export function SimpleCellAddressType(_context: SerializationContext): LogicalAvroType {
   return class SimpleCellAddressType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

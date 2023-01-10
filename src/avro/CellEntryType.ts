@@ -4,7 +4,7 @@
  */
 
 import avro from 'avsc'
-import {SerializationContext} from './SerializationContext'
+import {SerializationContext, SimpleAvroType} from './SerializationContext'
 import {Vertex} from '../DependencyGraph'
 import {VertexRefType} from './VertexRefType'
 
@@ -14,8 +14,8 @@ export interface CellEntry {
   vertex: Vertex,
 }
 
-export function CellEntryType(context: SerializationContext) {
-  const vertexRefType = context.getType(VertexRefType)
+export function CellEntryType(context: SerializationContext): SimpleAvroType {
+  const vertexRefType = context.getLogicalType(VertexRefType)
 
   return class CellEntryType {
     public static AvroType = avro.Type.forSchema({

@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { Schema, TypeOptions, types } from 'avsc'
+import avro, {Schema, TypeOptions, types} from 'avsc'
 import {Vertex} from '../DependencyGraph'
 import {VertexType} from './VertexType'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {VertexRefType} from './VertexRefType'
 import LogicalType = types.LogicalType
 
@@ -29,9 +29,9 @@ interface SerializedGraphStateFields {
 }
 
 
-export function SerializedGraphType(context: SerializationContext) {
-  const vertexType = context.getType(VertexType)
-  const vertexRefType = context.getType(VertexRefType)
+export function SerializedGraphType(context: SerializationContext): LogicalAvroType {
+  const vertexType = context.getLogicalType(VertexType)
+  const vertexRefType = context.getLogicalType(VertexRefType)
 
   const {vertexResolverService} = context
 

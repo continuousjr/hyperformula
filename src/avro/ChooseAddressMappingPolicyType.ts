@@ -3,14 +3,14 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {
   AlwaysDense,
   AlwaysSparse,
   ChooseAddressMapping,
   DenseSparseChooseBasedOnThreshold
 } from '../DependencyGraph/AddressMapping/ChooseAddressMappingPolicy'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface ChooseAddressMappingPolicyFields {
@@ -18,7 +18,7 @@ interface ChooseAddressMappingPolicyFields {
   threshold: number | null,
 }
 
-export function ChooseAddressMappingPolicyType(context: SerializationContext) {
+export function ChooseAddressMappingPolicyType(context: SerializationContext): LogicalAvroType {
   return class ChooseAddressMappingPolicyType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

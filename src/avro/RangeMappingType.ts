@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {RangeMapping, RangeVertex} from '../DependencyGraph'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {VertexRefType} from './VertexRefType'
 import LogicalType = types.LogicalType
 
@@ -18,8 +18,8 @@ interface RangeMappingFields {
   mappings: Record<number, RangeMappingEntry[]>,
 }
 
-export function RangeMappingType(context: SerializationContext) {
-  const vertexRefType = context.getType(VertexRefType)
+export function RangeMappingType(context: SerializationContext): LogicalAvroType {
+  const vertexRefType = context.getLogicalType(VertexRefType)
 
   return class RangeMappingType extends LogicalType {
     public static AvroType = avro.Type.forSchema({

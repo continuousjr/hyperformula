@@ -3,8 +3,8 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
-import {SerializationContext} from './SerializationContext'
+import avro, {types} from 'avsc'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {ArraySize} from '../ArraySize'
 import LogicalType = types.LogicalType
 
@@ -14,7 +14,7 @@ interface ArraySizeFields {
   isRef: boolean,
 }
 
-export function ArraySizeType(context: SerializationContext) {
+export function ArraySizeType(context: SerializationContext): LogicalAvroType {
   return class ArraySizeType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

@@ -7,7 +7,7 @@
 import avro from 'avsc'
 import {CellError} from '../Cell'
 import {CellErrorType} from './CellErrorType'
-import {SerializationContext} from './SerializationContext'
+import {SerializationContext, SimpleAvroType} from './SerializationContext'
 import {RichNumberType} from './RichNumberType'
 import {InterpreterValue, RichNumber} from '../interpreter/InterpreterValue'
 import {Maybe} from '../Maybe'
@@ -59,10 +59,10 @@ export function unwrapInterpreterValue(wrappedValue: PostserializedWrappedInterp
   return unwrapped
 }
 
-export function InterpreterValueType(context: SerializationContext) {
-  const cellErrorType = context.getType(CellErrorType)
-  const richNumberType = context.getType(RichNumberType)
-  const simpleRangeValueType = context.getType(SimpleRangeValueType)
+export function InterpreterValueType(context: SerializationContext): SimpleAvroType {
+  const cellErrorType = context.getLogicalType(CellErrorType)
+  const richNumberType = context.getLogicalType(RichNumberType)
+  const simpleRangeValueType = context.getLogicalType(SimpleRangeValueType)
 
   return class InterpreterValueType {
     public static AvroType = avro.Type.forTypes([
@@ -84,9 +84,9 @@ export function InterpreterValueType(context: SerializationContext) {
   }
 }
 
-export function InternalScalarValueType(context: SerializationContext) {
-  const cellErrorType = context.getType(CellErrorType)
-  const richNumberType = context.getType(RichNumberType)
+export function InternalScalarValueType(context: SerializationContext): SimpleAvroType {
+  const cellErrorType = context.getLogicalType(CellErrorType)
+  const richNumberType = context.getLogicalType(RichNumberType)
 
   return class InterpreterValueType {
     public static AvroType = avro.Type.forTypes([

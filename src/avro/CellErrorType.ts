@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {CellError, ErrorType} from '../Cell'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {FormulaVertex} from '../DependencyGraph/FormulaCellVertex'
 import {VertexRefType} from './VertexRefType'
 import {UnresolvedVertex} from './VertexResolverService'
@@ -18,8 +18,8 @@ export interface CellErrorFields {
   root?: FormulaVertex | UnresolvedVertex | null,
 }
 
-export function CellErrorType(context: SerializationContext) {
-  const vertexRefType = context.getType(VertexRefType)
+export function CellErrorType(context: SerializationContext): LogicalAvroType {
+  const vertexRefType = context.getLogicalType(VertexRefType)
 
   return class CellErrorType extends LogicalType {
     public static AvroType = avro.Type.forSchema({

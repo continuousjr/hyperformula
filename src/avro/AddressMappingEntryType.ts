@@ -5,7 +5,7 @@
 
 import avro from 'avsc'
 import {CellEntry, CellEntryType} from './CellEntryType'
-import {SerializationContext} from './SerializationContext'
+import {SerializationContext, SimpleAvroType} from './SerializationContext'
 
 export interface AddressMappingEntry {
   sheetId: number,
@@ -15,7 +15,7 @@ export interface AddressMappingEntry {
   cellEntries: CellEntry[],
 }
 
-export function AddressMappingEntryType(context: SerializationContext) {
+export function AddressMappingEntryType(context: SerializationContext): SimpleAvroType {
   const cellEntryType = context.getType(CellEntryType)
 
   return class AddressMappingEntryType {

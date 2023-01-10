@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {Sheet} from '../DependencyGraph/SheetMapping'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface SheetFields {
@@ -13,7 +13,7 @@ interface SheetFields {
   displayName: string,
 }
 
-export function SheetType(_context: SerializationContext) {
+export function SheetType(_context: SerializationContext): LogicalAvroType {
   return class SheetType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {CellAddress} from '../parser'
 import {CellReferenceType} from '../parser/CellAddress'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface CellAddressFields {
@@ -16,7 +16,7 @@ interface CellAddressFields {
   sheet: number | null,
 }
 
-export function CellAddressType(context: SerializationContext) {
+export function CellAddressType(context: SerializationContext): LogicalAvroType {
   return class CellAddressType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
         type: 'record',

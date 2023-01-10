@@ -3,13 +3,13 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {Vertex} from '../DependencyGraph'
 import {ParsingErrorVertexType} from './ParsingErrorVertexType'
 import {EmptyCellVertexType} from './EmptyCellVertexType'
 import {ValueCellVertexType} from './ValueCellVertexType'
 import {FormulaCellVertexType} from './FormulaCellVertexType'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {BaseVertex} from '../DependencyGraph/BaseVertex'
 import {RangeVertexType} from './RangeVertexType'
 import {ArrayVertexType} from './ArrayVertexType'
@@ -24,13 +24,13 @@ export interface VertexFields {
   vertex: WrappedVertex,
 }
 
-export function VertexType(context: SerializationContext) {
-  const emptyCellVertexType = context.getType(EmptyCellVertexType)
-  const parsingErrorVertexType = context.getType(ParsingErrorVertexType)
-  const valueCellVertexType = context.getType(ValueCellVertexType)
-  const formulaCellVertexType = context.getType(FormulaCellVertexType)
-  const rangeVertexType = context.getType(RangeVertexType)
-  const arrayVertexType = context.getType(ArrayVertexType)
+export function VertexType(context: SerializationContext): LogicalAvroType {
+  const emptyCellVertexType = context.getLogicalType(EmptyCellVertexType)
+  const parsingErrorVertexType = context.getLogicalType(ParsingErrorVertexType)
+  const valueCellVertexType = context.getLogicalType(ValueCellVertexType)
+  const formulaCellVertexType = context.getLogicalType(FormulaCellVertexType)
+  const rangeVertexType = context.getLogicalType(RangeVertexType)
+  const arrayVertexType = context.getLogicalType(ArrayVertexType)
 
   const {vertexResolverService} = context
 
@@ -62,7 +62,8 @@ export function VertexType(context: SerializationContext) {
         'parsingErrorVertex': parsingErrorVertexType,
         'valueCellVertex': valueCellVertexType,
         'formulaCellVertex': formulaCellVertexType,
-        'rangeVertex': rangeVertexType
+        'rangeVertex': rangeVertexType,
+        'arrayVertex': arrayVertexType,
       },
     })
 

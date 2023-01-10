@@ -4,27 +4,28 @@
  */
 
 import {LazilyTransformingAstService} from '../LazilyTransformingAstService'
-import {Schema, Type, TypeOptions} from 'avsc'
+import {Schema, Type, TypeOptions, types} from 'avsc'
 import {TranslationPackage} from '../i18n'
 import {VertexResolverService} from './VertexResolverService'
+import LogicalType = types.LogicalType
 
-export interface SimpleAvroType<T> {
-  new(): T,
-
-  AvroType: Type,
-}
-
-export interface LogicalAvroType<T> {
-  new(schema: Schema, opts: TypeOptions): T,
+export interface SimpleAvroType {
+  new(): unknown,
 
   AvroType: Type,
 }
 
-export type AvroType<T> = SimpleAvroType<T> | LogicalAvroType<T>
-export type AvroTypeCreator<T> = (context: SerializationContext) => AvroType<T>
+export interface LogicalAvroType {
+  new(schema: Schema, opts: TypeOptions): LogicalType,
+
+  AvroType: Type,
+}
+
+export type AvroType = SimpleAvroType | LogicalAvroType
+export type AvroTypeCreator = (context: SerializationContext) => AvroType
 
 export class SerializationContext {
-  private typeMap = new Map<string, AvroType<unknown>>()
+  private typeMap = new Map<string, AvroType>()
   public readonly vertexResolverService = new VertexResolverService()
 
   constructor(
@@ -33,12 +34,16 @@ export class SerializationContext {
   ) {
   }
 
-  getType<T>(creatorFn: AvroTypeCreator<T>): AvroType<T> {
+  getType(creatorFn: AvroTypeCreator): AvroType {
     const typeName = creatorFn.name
     if (!this.typeMap.has(typeName)) {
       this.typeMap.set(typeName, creatorFn(this))
     }
 
-    return this.typeMap.get(typeName) as AvroType<T>
+    return this.typeMap.get(typeName) as AvroType
+  }
+
+  getLogicalType(creatorFn: AvroTypeCreator): LogicalAvroType {
+    return this.getType(creatorFn) as LogicalAvroType
   }
 }

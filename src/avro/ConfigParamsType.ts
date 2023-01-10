@@ -3,15 +3,16 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
-import {SerializationContext} from './SerializationContext'
+import avro, {types} from 'avsc'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {ConfigParams} from '../Config'
 import {HyperFormula} from '../HyperFormula'
 import {ChooseAddressMappingPolicyType} from './ChooseAddressMappingPolicyType'
 import LogicalType = types.LogicalType
 
-export function ConfigParamsType(context: SerializationContext) {
-  const chooseAddressMappingPolicyType = context.getType(ChooseAddressMappingPolicyType)
+export function ConfigParamsType(context: SerializationContext): LogicalAvroType {
+  const chooseAddressMappingPolicyType = context.getLogicalType(ChooseAddressMappingPolicyType)
+
   return class ConfigParamsType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

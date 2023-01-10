@@ -3,16 +3,16 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {ArrayMapping} from '../DependencyGraph'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface ArrayMappingFields {
   mappings: string,
 }
 
-export function ArrayMappingType(context: SerializationContext) {
+export function ArrayMappingType(context: SerializationContext): LogicalAvroType {
   return class ArrayMappingType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

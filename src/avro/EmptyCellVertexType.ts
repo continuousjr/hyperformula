@@ -3,18 +3,18 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {SimpleCellAddressType} from './SimpleCellAddressType'
 import {SimpleCellAddress} from '../Cell'
 import {EmptyCellVertex} from '../DependencyGraph'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface EmptyCellVertexFields {
   address: SimpleCellAddress,
 }
 
-export function EmptyCellVertexType(context: SerializationContext) {
+export function EmptyCellVertexType(context: SerializationContext): LogicalAvroType {
   return class EmptyCellVertexType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

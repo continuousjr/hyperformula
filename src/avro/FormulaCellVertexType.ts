@@ -3,11 +3,11 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {SimpleCellAddressType} from './SimpleCellAddressType'
 import {SimpleCellAddress} from '../Cell'
 import {Ast} from '../parser'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {AstType} from './AstType'
 import {FormulaCellVertex} from '../DependencyGraph'
 import {RichNumberType} from './RichNumberType'
@@ -28,12 +28,12 @@ interface FormulaCellVertexFields {
   cachedCellValue: WrappedInterpreterValue,
 }
 
-export function FormulaCellVertexType(context: SerializationContext) {
-  const astType = context.getType(AstType)
-  const cellErrorType = context.getType(CellErrorType)
-  const richNumberType = context.getType(RichNumberType)
+export function FormulaCellVertexType(context: SerializationContext): LogicalAvroType {
   const interpreterValueType = context.getType(InterpreterValueType)
-  const simpleCellAddressType = context.getType(SimpleCellAddressType)
+  const astType = context.getLogicalType(AstType)
+  const cellErrorType = context.getLogicalType(CellErrorType)
+  const richNumberType = context.getLogicalType(RichNumberType)
+  const simpleCellAddressType = context.getLogicalType(SimpleCellAddressType)
 
   return class FormulaCellVertexType extends LogicalType {
     public static AvroType = avro.Type.forSchema({

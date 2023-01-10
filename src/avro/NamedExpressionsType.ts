@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {InternalNamedExpression, NamedExpressions} from '../NamedExpressions'
 import {InternalNamedExpressionType} from './InternalNamedExpressionType'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext, SimpleAvroType} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface NamedExpressionWithScope {
@@ -19,8 +19,8 @@ interface NamedExpressionsFields {
 }
 
 
-function NamedExpressionWithScopeType(context: SerializationContext) {
-  const internalNamedExpressionType = InternalNamedExpressionType(context)
+function NamedExpressionWithScopeType(context: SerializationContext): SimpleAvroType {
+  const internalNamedExpressionType = context.getLogicalType(InternalNamedExpressionType)
 
   return class NamedExpressionWithScopeType {
     public static AvroType = avro.Type.forSchema({
@@ -38,7 +38,7 @@ function NamedExpressionWithScopeType(context: SerializationContext) {
   }
 }
 
-export function NamedExpressionsType(context: SerializationContext) {
+export function NamedExpressionsType(context: SerializationContext): LogicalAvroType {
   return class NamedExpressionsType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

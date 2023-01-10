@@ -3,8 +3,8 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
-import {SerializationContext} from './SerializationContext'
+import avro, {types} from 'avsc'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {ArrayType, ArrayValue} from '../ArrayValue'
 import {
   InterpreterValueType,
@@ -20,7 +20,7 @@ interface ArrayValueFields {
   array: (WrappedInterpreterValue | InterpreterValue | null)[][],
 }
 
-export function ArrayValueType(context: SerializationContext) {
+export function ArrayValueType(context: SerializationContext): LogicalAvroType {
   const interpreterValueType = context.getType(InterpreterValueType)
 
   return class ArrayValueType extends LogicalType {

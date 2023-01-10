@@ -3,10 +3,10 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {SimpleCellAddressType} from './SimpleCellAddressType'
 import {SimpleCellAddress} from '../Cell'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {RangeVertex} from '../DependencyGraph'
 import {AbsoluteCellRange} from '../AbsoluteCellRange'
 import LogicalType = types.LogicalType
@@ -17,8 +17,8 @@ interface RangeVertexFields {
   end: SimpleCellAddress,
 }
 
-export function RangeVertexType(context: SerializationContext) {
-  const simpleCellAddressType = context.getType(SimpleCellAddressType)
+export function RangeVertexType(context: SerializationContext): LogicalAvroType {
+  const simpleCellAddressType = context.getLogicalType(SimpleCellAddressType)
 
   return class RangeVertexType extends LogicalType {
     public static AvroType = avro.Type.forSchema({

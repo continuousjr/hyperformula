@@ -3,9 +3,9 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {CellError} from '../Cell'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {ArraySize} from '../ArraySize'
 import {CellErrorType} from './CellErrorType'
 import {ArraySizeType} from './ArraySizeType'
@@ -17,9 +17,9 @@ interface ErroredArrayFields {
   size: ArraySize,
 }
 
-export function ErroredArrayType(context: SerializationContext) {
-  const cellErrorType = context.getType(CellErrorType)
-  const arraySizeType = context.getType(ArraySizeType)
+export function ErroredArrayType(context: SerializationContext): LogicalAvroType {
+  const cellErrorType = context.getLogicalType(CellErrorType)
+  const arraySizeType = context.getLogicalType(ArraySizeType)
 
   return class ErroredArrayType extends LogicalType {
     public static AvroType = avro.Type.forSchema({

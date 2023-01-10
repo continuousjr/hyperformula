@@ -3,11 +3,11 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {SimpleCellAddress} from '../Cell'
 import {InternalNamedExpression, NamedExpressionOptions} from '../NamedExpressions'
 import {SimpleCellAddressType} from './SimpleCellAddressType'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface InternalNamedExpressionFields {
@@ -17,7 +17,7 @@ interface InternalNamedExpressionFields {
   options?: NamedExpressionOptions,
 }
 
-export function InternalNamedExpressionType(context: SerializationContext) {
+export function InternalNamedExpressionType(context: SerializationContext): LogicalAvroType {
   return class InternalNamedExpressionType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

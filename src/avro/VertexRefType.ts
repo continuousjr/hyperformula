@@ -3,14 +3,14 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {Vertex} from '../DependencyGraph'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {UnresolvedVertex} from './VertexResolverService'
 import LogicalType = types.LogicalType
 
 
-export function VertexRefType(context: SerializationContext) {
+export function VertexRefType(context: SerializationContext): LogicalAvroType {
   const {vertexResolverService} = context
 
   return class VertexRefType extends LogicalType {

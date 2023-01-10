@@ -3,8 +3,8 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
-import {SerializationContext} from './SerializationContext'
+import avro, {types} from 'avsc'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import {
   InternalScalarValueType,
   PostserializedWrappedInterpreterValue,
@@ -20,7 +20,7 @@ export interface SimpleRangeValueFields {
   data: (WrappedInterpreterValue | InternalScalarValue)[][],
 }
 
-export function SimpleRangeValueType(context: SerializationContext) {
+export function SimpleRangeValueType(context: SerializationContext): LogicalAvroType {
   const internalScalarValueType = context.getType(InternalScalarValueType)
 
   return class SimpleRangeValueType extends LogicalType {

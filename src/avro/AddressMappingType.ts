@@ -3,13 +3,13 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, { types } from 'avsc'
+import avro, {types} from 'avsc'
 import {AddressMapping, CellVertex, DenseStrategy, SparseStrategy} from '../DependencyGraph'
 import {ChooseAddressMapping} from '../DependencyGraph/AddressMapping/ChooseAddressMappingPolicy'
 import {ChooseAddressMappingPolicyType} from './ChooseAddressMappingPolicyType'
 import {AddressMappingEntry, AddressMappingEntryType} from './AddressMappingEntryType'
 import {CellEntry} from './CellEntryType'
-import {SerializationContext} from './SerializationContext'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
 import LogicalType = types.LogicalType
 
 interface AddressMappingFields {
@@ -17,10 +17,11 @@ interface AddressMappingFields {
   mappingEntries: AddressMappingEntry[],
 }
 
-export function AddressMappingType(context: SerializationContext) {
-  const chooseAddressMappingPolicyType = context.getType(ChooseAddressMappingPolicyType)
+export function AddressMappingType(context: SerializationContext): LogicalAvroType {
+  const chooseAddressMappingPolicyType = context.getLogicalType(ChooseAddressMappingPolicyType)
   const addressMappingEntryType = context.getType(AddressMappingEntryType)
 
+  // eslint-disable-next-line jsdoc/require-jsdoc
   return class AddressMappingType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',

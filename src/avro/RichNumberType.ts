@@ -3,8 +3,8 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import {SerializationContext} from './SerializationContext'
-import avro, { types } from 'avsc'
+import {LogicalAvroType, SerializationContext} from './SerializationContext'
+import avro, {types} from 'avsc'
 import {
   CurrencyNumber,
   DateNumber,
@@ -32,7 +32,7 @@ const RichNumberTypes: { [key: string]: RichNumberTypeConstructor } = {
   [NumberType.NUMBER_CURRENCY]: CurrencyNumber,
 }
 
-export function RichNumberType(context: SerializationContext) {
+export function RichNumberType(context: SerializationContext): LogicalAvroType {
   return class RichNumberType extends LogicalType {
     public static AvroType = avro.Type.forSchema({
       type: 'record',
