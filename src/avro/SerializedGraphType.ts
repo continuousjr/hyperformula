@@ -25,7 +25,7 @@ interface SerializedGraphStateFields {
   specialNodesStructuralChanges: Vertex[],
   specialNodesRecentlyChanged: Vertex[],
   infiniteRanges: Vertex[],
-  edges: Map<number, number[]>,
+  edges: Record<number, number[]>,
 }
 
 
@@ -92,37 +92,45 @@ export function SerializedGraphType(context: SerializationContext): LogicalAvroT
     }
 
     protected _fromValue(graphState: SerializedGraphStateFields): SerializedGraphState<Vertex> {
+      const edges = Object.entries(graphState.edges).reduce((map, [sourceId, targetIds]) => {
+        const source = vertexResolverService.fromId(+sourceId)
+        const mappedTargets = Array.from(targetIds).map(t => {
+          return vertexResolverService.fromId(t)
+        })
+        map.set(source, new Set(mappedTargets));
+        return map;
+      }, new Map<Vertex, Set<Vertex>>());
+
       return {
         nodes: new Set(graphState.nodes),
         specialNodes: new Set(graphState.specialNodes),
         specialNodesStructuralChanges: new Set(graphState.specialNodesStructuralChanges),
         specialNodesRecentlyChanged: new Set(graphState.specialNodesRecentlyChanged),
         infiniteRanges: new Set(graphState.infiniteRanges),
-        edges: new Map(
-          Array.from(graphState.edges,
-            (
-              [source, targets]) =>
-              ([vertexResolverService.fromId(source), new Set(Array.from(targets).map(t => vertexResolverService.fromId(t)))])
-          )
-        ),
+        edges: edges,
       }
     }
 
     protected _toValue(val: SerializedGraphState<Vertex>): SerializedGraphStateFields {
-      const nodes = Array.from(val.nodes)
+      const nodes = Array.from(val.nodes, (v => {
+        vertexResolverService.assignId(v)
+        return v
+      }))
+
+      const edgeMap: Record<number, number[]> = {}
+      val.edges.forEach((targets: Set<Vertex>, source: Vertex) => {
+        const vertexId = vertexResolverService.getId(source)
+        const vertexTargets = Array.from(targets).map(v => vertexResolverService.getId(v))
+        edgeMap[vertexId] = vertexTargets
+      })
+
       return {
         nodes: nodes,
         specialNodes: Array.from(val.specialNodes),
         specialNodesStructuralChanges: Array.from(val.specialNodesStructuralChanges),
         specialNodesRecentlyChanged: Array.from(val.specialNodesRecentlyChanged),
         infiniteRanges: Array.from(val.infiniteRanges),
-        edges: new Map(
-          Array.from(val.edges,
-            (
-              [source, targets]) =>
-              ([vertexResolverService.getId(source), Array.from(targets).map(v => vertexResolverService.getId(v))])
-          )
-        ),
+        edges: edgeMap,
       }
     }
   }

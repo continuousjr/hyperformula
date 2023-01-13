@@ -78,7 +78,7 @@ export function VertexType(context: SerializationContext): LogicalAvroType {
 
     protected _toValue(val: Vertex): VertexFields {
       const type = (val as BaseVertex).type
-      const id = vertexResolverService.assignId(val)
+      const id = vertexResolverService.getId(val)
 
       return {
         id,

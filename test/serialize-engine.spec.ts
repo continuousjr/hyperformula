@@ -617,7 +617,7 @@ describe('Saving and restoring engine state', () => {
           value: 'Hello'
         } as StringAst, simpleCellAddress(0, 0, 0), 2)
 
-        const restored = serializeAndRestoreItem(VertexType, vertex)
+        const restored = serializeAndRestoreItem(VertexType, vertex, vertex)
 
         expect(restored).toEqual(vertex)
       })
@@ -628,7 +628,7 @@ describe('Saving and restoring engine state', () => {
           const vertex = new RangeVertex(range)
           vertex.bruteForce = true
 
-          const restored = serializeAndRestoreItem(VertexType, vertex)
+          const restored = serializeAndRestoreItem(VertexType, vertex, vertex)
 
           expect(restored).toEqual(vertex)
         })
@@ -738,6 +738,22 @@ describe('Saving and restoring engine state', () => {
         expect(getRestoredValue('G3')).toEqual(52)
       })
     })
+
+    describe('after deserialization', () => {
+      beforeEach(() => {
+        buildEngine()
+
+        setCellContents('A1', 23.52)
+
+        serializeAndRestore()
+
+        setCellContents('A2', '=A1 * 100', restoredEngine)
+      })
+
+      it('should allow for updates after being reconstituted', () => {
+        expect(getRestoredValue('A2')).toEqual(2352)
+      })
+    })
   })
 
   function buildEngine(config: Partial<ConfigParams> = {}) {
@@ -753,8 +769,8 @@ describe('Saving and restoring engine state', () => {
     return engine.simpleCellAddressFromString(range, sheet)!
   }
 
-  function setCellContents(range: string, cellContents: RawCellContent[][] | RawCellContent) {
-    engine.setCellContents(address(range), cellContents)
+  function setCellContents(range: string, cellContents: RawCellContent[][] | RawCellContent, engineToUpdate?: HyperFormula) {
+    (engineToUpdate || engine).setCellContents(address(range), cellContents)
   }
 
   function getRestoredValue(range: string, sheetId = 0) {
