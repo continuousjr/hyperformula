@@ -742,16 +742,25 @@ describe('Saving and restoring engine state', () => {
     describe('after deserialization', () => {
       beforeEach(() => {
         buildEngine()
-
         setCellContents('A1', 23.52)
-
+        setCellContents('B1', 'Some value')
+        setCellContents('C1', '=A1 * 10')
         serializeAndRestore()
-
-        setCellContents('A2', '=A1 * 100', restoredEngine)
       })
 
-      it('should allow for updates after being reconstituted', () => {
+      it('should allow for setting a new cell', () => {
+        setCellContents('A2', '=A1 * 100', restoredEngine)
         expect(getRestoredValue('A2')).toEqual(2352)
+      })
+
+      it('should allow for overwriting the value of an existing cell', () => {
+        setCellContents('B1', 25, restoredEngine)
+        expect(getRestoredValue('B1')).toEqual(25)
+      })
+
+      it('should allow for overwriting a precedent of another cell', () => {
+        setCellContents('A1', 24, restoredEngine)
+        expect(getRestoredValue('C1')).toEqual(240)
       })
     })
   })
