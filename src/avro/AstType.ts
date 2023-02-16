@@ -27,6 +27,15 @@ const binaryOpSchema = (type: string): RecordType => ({
   ]
 })
 
+const unaryOpSchema = (type: string): RecordType => ({
+  type: 'record',
+  name: type,
+  fields: [
+    {name: 'value', type: 'Ast'},
+    {name: 'leadingWhitespace', type: 'string', default: ''},
+  ]
+})
+
 export function AstType(context: SerializationContext): LogicalAvroType {
   const cellErrorType = context.getLogicalType(CellErrorType)
   const cellAddressType = context.getLogicalType(CellAddressType)
@@ -108,14 +117,9 @@ export function AstType(context: SerializationContext): LogicalAvroType {
                 {name: 'leadingWhitespace', type: 'string', default: ''},
               ]
             },
-            {
-              type: 'record',
-              name: AstNodeType.PERCENT_OP,
-              fields: [
-                {name: 'value', type: 'Ast'},
-                {name: 'leadingWhitespace', type: 'string', default: ''},
-              ]
-            },
+            unaryOpSchema(AstNodeType.PLUS_UNARY_OP),
+            unaryOpSchema(AstNodeType.MINUS_UNARY_OP),
+            unaryOpSchema(AstNodeType.PERCENT_OP),
             {
               type: 'record',
               name: AstNodeType.FUNCTION_CALL,

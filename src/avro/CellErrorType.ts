@@ -14,7 +14,7 @@ import LogicalType = types.LogicalType
 
 export interface CellErrorFields {
   type: string,
-  message?: string,
+  message: string | null,
   root?: FormulaVertex | UnresolvedVertex | null,
 }
 
@@ -28,7 +28,7 @@ export function CellErrorType(context: SerializationContext): LogicalAvroType {
       logicalType: 'cellError',
       fields: [
         {name: 'type', type: 'string'},
-        {name: 'message', type: 'string'},
+        {name: 'message', type: avro.Type.forTypes([avro.Type.forSchema('null'), avro.Type.forSchema('string')])},
         {name: 'root', type: avro.Type.forTypes([avro.Type.forSchema('null'), vertexRefType.AvroType])},
       ]
     }, {
@@ -40,7 +40,7 @@ export function CellErrorType(context: SerializationContext): LogicalAvroType {
 
     protected _fromValue(fields: CellErrorFields): CellError {
       const root = fields.root || undefined
-      const error = new CellError(fields.type as ErrorType, fields.message)
+      const error = new CellError(fields.type as ErrorType, fields.message || undefined)
 
       if ((root as UnresolvedVertex)?.unresolvedVertexId) {
         context.vertexResolverService.registerVertexCallback(root as UnresolvedVertex, (vertex: Vertex) => {
@@ -56,7 +56,7 @@ export function CellErrorType(context: SerializationContext): LogicalAvroType {
     protected _toValue(val: CellError): CellErrorFields {
       return {
         type: val.type,
-        message: val.message,
+        message: val.message || null,
         root: val.root || null
       }
     }

@@ -14,7 +14,7 @@ interface InternalNamedExpressionFields {
   displayName: string,
   address: SimpleCellAddress,
   added: boolean,
-  options?: NamedExpressionOptions,
+  options: NamedExpressionOptions | null,
 }
 
 export function InternalNamedExpressionType(context: SerializationContext): LogicalAvroType {
@@ -28,14 +28,17 @@ export function InternalNamedExpressionType(context: SerializationContext): Logi
         {name: 'address', type: SimpleCellAddressType(context).AvroType},
         {name: 'added', type: 'boolean'},
         {
-          name: 'options', type: avro.Type.forSchema({
-            type: 'map',
-            values: avro.Type.forTypes([
-              avro.Type.forSchema({type: 'string'}),
-              avro.Type.forSchema({type: 'long'}),
-              avro.Type.forSchema({type: 'boolean'})
-            ])
-          })
+          name: 'options', type: avro.Type.forTypes([
+            avro.Type.forSchema('null'),
+            avro.Type.forSchema({
+              type: 'map',
+              values: avro.Type.forTypes([
+                avro.Type.forSchema({type: 'string'}),
+                avro.Type.forSchema({type: 'long'}),
+                avro.Type.forSchema({type: 'boolean'})
+              ])
+            })
+          ])
         },
       ]
     }, {
@@ -45,7 +48,7 @@ export function InternalNamedExpressionType(context: SerializationContext): Logi
     })
 
     protected _fromValue(fields: InternalNamedExpressionFields): InternalNamedExpression {
-      return new InternalNamedExpression(fields.displayName, fields.address, fields.added, fields.options)
+      return new InternalNamedExpression(fields.displayName, fields.address, fields.added, fields.options || undefined)
     }
 
     protected _toValue(expression: InternalNamedExpression): InternalNamedExpressionFields {
@@ -53,7 +56,7 @@ export function InternalNamedExpressionType(context: SerializationContext): Logi
         displayName: expression.displayName,
         added: expression.added,
         address: expression.address,
-        options: expression.options
+        options: expression.options || null
       }
     }
   }

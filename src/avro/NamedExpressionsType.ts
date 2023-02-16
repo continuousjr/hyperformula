@@ -11,7 +11,7 @@ import LogicalType = types.LogicalType
 
 interface NamedExpressionWithScope {
   expression: InternalNamedExpression,
-  scope?: number,
+  scope: number | null,
 }
 
 interface NamedExpressionsFields {
@@ -28,7 +28,13 @@ function NamedExpressionWithScopeType(context: SerializationContext): SimpleAvro
       name: 'ExpressionTypeWithScope',
       fields: [
         {name: 'expression', type: internalNamedExpressionType.AvroType},
-        {name: 'scope', type: 'int'}
+        {
+          name: 'scope',
+          type: avro.Type.forTypes([
+            avro.Type.forSchema('null'),
+            avro.Type.forSchema('int'),
+          ])
+        }
       ]
     }, {
       logicalTypes: {
@@ -62,7 +68,7 @@ export function NamedExpressionsType(context: SerializationContext): LogicalAvro
       const namedExpressions = new NamedExpressions()
 
       fields.expressions.forEach(expressionWithScope => {
-        namedExpressions.restoreNamedExpression(expressionWithScope.expression, expressionWithScope.scope)
+        namedExpressions.restoreNamedExpression(expressionWithScope.expression, expressionWithScope.scope || undefined)
       })
 
       return namedExpressions
@@ -70,7 +76,10 @@ export function NamedExpressionsType(context: SerializationContext): LogicalAvro
 
     protected _toValue(namedExpressions: NamedExpressions): NamedExpressionsFields {
       return {
-        expressions: namedExpressions.getAllNamedExpressions()
+        expressions: namedExpressions.getAllNamedExpressions().map(e => ({
+          expression: e.expression,
+          scope: e.scope || null
+        }))
       }
     }
   }
