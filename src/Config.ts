@@ -153,6 +153,16 @@ export interface ConfigParams {
    * @category Engine
    */
   evaluateNullToZero: boolean,
+
+  /**
+   * When set to `true`, SUBTOTAL behaves like excel, ignoring other SUBTOTAL formulas in selected range
+   *
+   * @default false
+   *
+   * @category Engine
+   */
+  excelCompatibleSubtotal: boolean,
+
   /**
    * Lists additional function plugins to be used by the formula interpreter.
    *
@@ -498,6 +508,7 @@ export class Config implements ConfigParams, ParserConfig {
     dateFormats: ['DD/MM/YYYY', 'DD/MM/YY'],
     decimalSeparator: '.',
     evaluateNullToZero: false,
+    excelCompatibleSubtotal: false,
     functionArgSeparator: ',',
     functionPlugins: [],
     ignorePunctuation: false,
@@ -571,6 +582,8 @@ export class Config implements ConfigParams, ParserConfig {
   /** @inheritDoc */
   public readonly evaluateNullToZero: boolean
   /** @inheritDoc */
+  public readonly excelCompatibleSubtotal: boolean
+  /** @inheritDoc */
   public readonly nullYear: number
   /** @inheritDoc */
   public readonly parseDateTime: (dateTimeString: string, dateFormat?: string, timeFormat?: string) => Maybe<DateTime>
@@ -627,6 +640,7 @@ export class Config implements ConfigParams, ParserConfig {
       dateFormats,
       decimalSeparator,
       evaluateNullToZero,
+      excelCompatibleSubtotal,
       functionArgSeparator,
       functionPlugins,
       ignorePunctuation,
@@ -682,6 +696,7 @@ export class Config implements ConfigParams, ParserConfig {
     this.functionPlugins = [...(functionPlugins ?? Config.defaultConfig.functionPlugins)]
     this.smartRounding = configValueFromParam(smartRounding, 'boolean', 'smartRounding')
     this.evaluateNullToZero = configValueFromParam(evaluateNullToZero, 'boolean', 'evaluateNullToZero')
+    this.excelCompatibleSubtotal = configValueFromParam(excelCompatibleSubtotal, 'boolean', 'excelCompatibleSubtotal')
     this.nullYear = configValueFromParam(nullYear, 'number', 'nullYear')
     validateNumberToBeAtLeast(this.nullYear, 'nullYear', 0)
     validateNumberToBeAtMost(this.nullYear, 'nullYear', 100)

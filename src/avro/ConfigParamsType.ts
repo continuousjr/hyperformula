@@ -29,6 +29,7 @@ export function ConfigParamsType(context: SerializationContext): LogicalAvroType
         {name: 'functionArgSeparator', type: 'string'},
         {name: 'decimalSeparator', type: 'string'},
         {name: 'evaluateNullToZero', type: 'boolean'},
+        {name: 'excelCompatibleSubtotal', type: 'boolean'},
         {name: 'ignorePunctuation', type: 'boolean'},
         {name: 'language', type: 'string'},
         {name: 'licenseKey', type: 'string'},
