@@ -74,6 +74,7 @@ describe('Saving and restoring engine state', () => {
         dateFormats: ['MM/DD/YYYY', 'MM/DD/YY'],
         decimalSeparator: ',',
         evaluateNullToZero: true,
+        excelCompatibleSubtotal: true,
         functionArgSeparator: '.',
         ignorePunctuation: true,
         language: 'enGB',

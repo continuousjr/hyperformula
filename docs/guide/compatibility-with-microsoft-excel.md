@@ -145,6 +145,16 @@ Options related to date and time formats:
 - [`stringifyDateTime()`](../api/interfaces/configparams.md#stringifydatetime)
 - [`stringifyDuration()`](../api/interfaces/configparams.md#stringifyduration)
 
+### Function compatibility
+
+In Microsoft Excel, the SUBTOTAL function will ignore other cells with formulas that also use the SUBTOTAL function.  
+By default Hyperformula does not.  To enable Excel-like behavior for the SUBTOTAL function, set the 
+`excelCompatibileSubtotal` option to `true`.
+
+```js
+excelCompatibleSubtotal: true,
+```
+
 ## Full configuration
 
 This configuration aligns HyperFormula with the default behavior of Microsoft Excel (set to locale `en-US`), as closely as possible at this development stage (version `{{ $page.version }}`).
@@ -171,6 +181,7 @@ const options = {
   useArrayArithmetic: true,
   ignoreWhiteSpace: 'any',
   evaluateNullToZero: true,
+  excelCompatibleSubtotal: true,
   leapYear1900: true,
   nullDate: { year: 1899, month: 12, day: 31 },
   smartRounding: true, // set by default

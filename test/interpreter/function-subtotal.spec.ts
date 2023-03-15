@@ -161,7 +161,7 @@ describe('Function SUBTOTAL', () => {
   /**
    * Inconsistency with ODFF standard.
    */
-  it('does not ignore other SUBTOTALS', () => {
+  it('does not ignore other SUBTOTALS by default', () => {
     const engine = HyperFormula.buildFromArray([
       ['=SUBTOTAL(9, A2:A4)'],
       ['=SUBTOTAL(9, B2:C2)', 1, 1],
@@ -169,5 +169,18 @@ describe('Function SUBTOTAL', () => {
       ['=SUBTOTAL(9, B4:C4)', 1, 1],
     ])
     expect(engine.getCellValue(adr('A1'))).toEqual(6)
+  })
+
+  it('ignores other SUBTOTALS when configuration is set', () => {
+    const engine = HyperFormula.buildFromArray([
+      ['=SUBTOTAL(9, A2:A5)'],
+      ['=SUBTOTAL(9, B2:C2)', 1, 1],
+      ['=SUBTOTAL(9, B3:C3)', 1, 1],
+      ['=SUBTOTAL(9, B4:C4)', 1, 1],
+      [1, 1, 1],
+    ], {
+      excelCompatibleSubtotal: true
+    })
+    expect(engine.getCellValue(adr('A1'))).toEqual(1)
   })
 })
