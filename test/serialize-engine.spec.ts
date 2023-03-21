@@ -8,7 +8,7 @@ import {
   RawCellContent,
   SimpleCellAddress
 } from '../src'
-import {FormulaCellVertex, RangeVertex, Vertex} from '../src/DependencyGraph'
+import { FormulaCellVertex, ParsingErrorVertex, RangeVertex, Vertex } from '../src/DependencyGraph'
 import {
   AstNodeType,
   CellAddress,
@@ -30,14 +30,14 @@ import {
   ProcedureAst,
   StringAst
 } from '../src/parser'
-import {VertexType} from '../src/avro/VertexType'
-import {SimpleCellAddressType} from '../src/avro/SimpleCellAddressType'
-import {AvroTypeCreator, SerializationContext} from '../src/avro/SerializationContext'
-import {AstType} from '../src/avro/AstType'
-import {Config} from '../src/Config'
-import {CellReferenceType} from '../src/parser/CellAddress'
-import {DateNumber} from '../src/interpreter/InterpreterValue'
-import {RichNumberType} from '../src/avro/RichNumberType'
+import { VertexType } from '../src/avro/VertexType'
+import { SimpleCellAddressType } from '../src/avro/SimpleCellAddressType'
+import { AvroTypeCreator, SerializationContext } from '../src/avro/SerializationContext'
+import { AstType } from '../src/avro/AstType'
+import { Config } from '../src/Config'
+import { CellReferenceType } from '../src/parser/CellAddress'
+import { DateNumber } from '../src/interpreter/InterpreterValue'
+import { RichNumberType } from '../src/avro/RichNumberType'
 import {
   ArrayAst,
   buildNumberAst,
@@ -46,16 +46,17 @@ import {
   EmptyArgAst,
   ErrorWithRawInputAst,
   ParenthesisAst,
+  ParsingErrorType,
   PercentOpAst,
   RangeSheetReferenceType,
   RowRangeAst,
   TimesOpAst
 } from '../src/parser/Ast'
-import {RowAddress} from '../src/parser/RowAddress'
-import {ColumnAddress, ReferenceType} from '../src/parser/ColumnAddress'
-import {simpleCellAddress} from '../src/Cell'
-import {AbsoluteCellRange} from '../src/AbsoluteCellRange'
-import {FormulaVertex} from '../src/DependencyGraph/FormulaCellVertex'
+import { RowAddress } from '../src/parser/RowAddress'
+import { ColumnAddress, ReferenceType } from '../src/parser/ColumnAddress'
+import { simpleCellAddress } from '../src/Cell'
+import { AbsoluteCellRange } from '../src/AbsoluteCellRange'
+import { FormulaVertex } from '../src/DependencyGraph/FormulaCellVertex'
 
 describe('Saving and restoring engine state', () => {
   let engine: HyperFormula
@@ -632,6 +633,18 @@ describe('Saving and restoring engine state', () => {
 
           expect(restored).toEqual(vertex)
         })
+      })
+
+      describe('parsing error vertex', () => {
+        it('should serialize and restore correctly', () => {
+          const vertex = new ParsingErrorVertex([
+            {type: ParsingErrorType.ParserError, message: 'Some message'}
+          ], 'Some text')
+
+          const restored = serializeAndRestoreItem(VertexType, vertex, vertex)
+          expect(restored).toEqual(vertex)
+        })
+
       })
     })
 

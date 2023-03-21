@@ -3,11 +3,11 @@
  * Copyright (c) 2022 Handsoncode. All rights reserved.
  */
 
-import avro, {types} from 'avsc'
-import {ParsingError, ParsingErrorType} from '../parser/Ast'
-import {ParsingErrorVertex} from '../DependencyGraph'
-import {LogicalAvroType, SerializationContext} from './SerializationContext'
-import LogicalType = types.LogicalType
+import avro, { types } from 'avsc'
+import { ParsingError, ParsingErrorType } from '../parser/Ast'
+import { ParsingErrorVertex } from '../DependencyGraph'
+import { LogicalAvroType, SerializationContext } from './SerializationContext'
+import LogicalType = types.LogicalType;
 
 interface ParsingErrorFields {
   type: string,
@@ -46,7 +46,7 @@ export function ParsingErrorVertexType(_context: SerializationContext): LogicalA
 
     protected _fromValue(val: ParsingErrorVertexFields): ParsingErrorVertex {
       const errors = val.errors.map(e => ({
-        type: ParsingErrorType[e.type as keyof typeof ParsingErrorType],
+        type: e.type as ParsingErrorType,
         message: e.message,
       }))
 
