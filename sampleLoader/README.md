@@ -12,6 +12,10 @@ To allow for working around incompatibilities with Excel, a JSON file may be pro
 ```
 {
   "overrides": {
+   // Literal replacements for explicit formulas
+   "excelValues": {
+      "=SomeSheet!SomeCell": "Explicit value for replacement"
+    },
    // Regular expression replacement based on cell value using sheet-level variables 
     "replacements": [
       {
