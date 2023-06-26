@@ -1,0 +1,28 @@
+{
+  "overrides": {
+    "replacements": [
+      {
+        "regex": "MID\\(@?CELL\\(\"filename\"\\),FIND\\(\"]\",CELL\\(\"filename\"\\)\\)\\+1,256\\)",
+        "replacement": "\"{SHEET_NAME}\"",
+        "variables": {
+        }
+      },
+      {
+        "regex": "(([a-zA-Z0-9]+)|('[^']+'))!\\$1:\\$1048576",
+        "replacement": "$1!$$A$$1:$${MAX_COLUMN}$$10000",
+        "variables": {
+          "MAX_COLUMN": 0
+        }
+      }
+    ],
+    "variableValues": {
+      "MAX_COLUMN": {
+        "__default": "Z",
+        "Sheet2": "L"
+      }
+    },
+    "Sheet1": {
+      "B6": "SUM(B3:B5)-B5"
+    }
+  }
+}
